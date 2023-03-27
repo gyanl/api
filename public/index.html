@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acronym Generator</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+
+        #results {
+            font-size: 1.25rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- inputbox -->
+    <input type="text" id="inputbox" placeholder="Enter a name">
+    <h1>Acronym Generator</h1>
+    <button onclick="fetchAcronyms()">Generate Acronyms</button>
+    <div id="results"></div>
+    <script>
+
+
+
+async function fetchAcronyms(nameToExpand) {
+    // get the name from the inputbox
+    const name = document.getElementById('inputbox').value;
+    const response = await fetch('/acronyms/' + nameToExpand);
+    const data = await response.json();
+
+    // split data into an array
+    const acronyms = data.acronyms.split(',');
+
+    // pick a random acronym
+    const randomAcronym = acronyms[Math.floor(Math.random() * acronyms.length)];
+
+    // display the random acronym in the response div
+    document.getElementById('results').innerHTML = randomAcronym;
+}
+
+    </script>
+</body>
+</html>

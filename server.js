@@ -33,7 +33,7 @@ app.get('/acronyms/:nameToExpand', async (req, res) => {
     });
 
     const acros = response.data.choices[0].text
-      .replace(/\.|\s|\r|\n/gm, '')
+      .replace(/\.|\r|\n/gm, '')
       .split(', ')
       .map(x => x.trim());
     res.json(acros);
@@ -47,6 +47,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });
-
-// get the name to expand from the request parameters
 

@@ -240,7 +240,7 @@
             }
             #main {
                 position: relative;
-                font-size: 2.5em;
+                font-size: 2.2em;
                 top: auto;
                 left: auto;
                 transform: none;
@@ -263,9 +263,13 @@
 <body>
     <div class="generate">
         <div id="title">What is <span id="name-insert">Gyan</span>?</div>
-        <div id="loading"><div class="lds-ripple"><div></div><div></div></div></div>
+        <div id="loading">
+            
+            <div class="lds-ripple"><div></div><div></div></div>
+            <p>Thinking...</p>
+        </div>
         <div id="main">
-            AIcronym is Thinking...
+            
         </div>
         <div class="button-container">
             <button id="regenerate">Regenerate</button>
@@ -292,6 +296,8 @@
 
         // on page load, check if there is a name in the url and return it. Else return "0"
         var name = window.location.href.split("?name=")[1] || "0";
+
+        // read expand from local storage
         var expand = [];
         name = name.toUpperCase();
 
@@ -308,7 +314,7 @@
         //         return [];
         //     }
         //     }
-
+        
         // function to fetch acronyms from openai api
         async function fetchAcronyms(name) {
         const response = await fetch('https://acronym.gyanl.com/acronyms/' + name);
@@ -317,7 +323,10 @@
         // change loading div to display none
         document.querySelector("#loading").style.display = "none";
         // convert data to array
-        expand = data;
+        // append contents of 'data' array to 'expand' array without overwriting previous contents
+        expand = expand.concat(data);
+        // write expand to local storage
+        // localStorage.setItem("expand", JSON.stringify(expand));
         console.log(expand);
         updatePageWithNewAcronym();
         }
@@ -365,6 +374,19 @@
                     lastpicked = randomIndex;
                     return array[randomIndex];
                 }
+            }
+
+
+            // fn to get next string at nth position in array and increment n by 1
+            function nextString(array) {
+                var nextIndex = lastpicked + 1;
+                if (nextIndex >= array.length) {
+                    nextIndex = 0;
+                    fetchAcronyms(name);
+                    document.querySelector("#loading").style.display = "inline-block";
+                }
+                lastpicked = nextIndex;
+                return array[nextIndex];
             }
       
           // function to insert string into div with id "main"
@@ -422,7 +444,7 @@
 
           function updatePageWithNewAcronym() {
             generateColors();
-            insertString(animateString(randomString(expand)));
+            insertString(animateString(nextString(expand)));
             removeBounce();
             void document.getElementById("title").offsetWidth; // trigger reflow
             titleBounce();

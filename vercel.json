@@ -1,15 +1,19 @@
-{
-  "version": 2,
-  "builds": [
-    {
-      "src": "server.js",
-      "use": "@vercel/node"
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/acronyms/:nameToExpand",
-      "destination": "/server.js"
-    }
-  ]
-}
+  {
+    "version": 2,
+    "builds": [
+      {
+        "src": "server.js",
+        "use": "@vercel/node"
+      }
+    ],
+    "routes": [
+      {
+        "src": "/acronyms/.*",
+        "dest": "/server.js"
+      },
+      {
+        "src": "/.*",
+        "dest": "index.html"
+      }
+    ]
+  }

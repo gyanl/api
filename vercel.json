@@ -10,10 +10,6 @@
     {
       "source": "/acronyms/:nameToExpand",
       "destination": "/server.js"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/public/index.html"
     }
   ]
 }

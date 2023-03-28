@@ -216,6 +216,7 @@
         <div id="main">The Machine is Thinking.</div>
         <div class="button-container">
             <button id="regenerate">Regenerate</button>
+            <button id="share">Share</button>            
             <button id="tweet">Tweet</button>
         </div>
     </div>
@@ -408,6 +409,23 @@
             // event listener for button with id "twitter" that runs shareTweet()
             document.querySelector("#tweet").addEventListener("click", function() {
                 shareTweet();
+            });
+
+            // take a screenshot of main div and share using system share dialog
+            function shareScreenshot() {
+                var main = document.querySelector("#main");
+                html2canvas(main).then(function(canvas) {
+                    var dataURL = canvas.toDataURL("image/png");
+                    var shareData = {
+                        files: [dataURL]
+                    }
+                    navigator.share(shareData);
+                });
+            }
+
+            // event listener for button with id "share" that runs shareScreenshot()
+            document.querySelector("#share").addEventListener("click", function() {
+                shareScreenshot();
             });
 
                 // generate confetti

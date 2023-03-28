@@ -257,8 +257,7 @@
 
         // function to fetch acronyms from openai api
         async function fetchAcronyms(name) {
-        // get the name from the inputbox
-        const response = await fetch('/acronyms/' + name);
+        const response = await fetch('https://acronym.gyanl.com/acronyms/' + name);
         const data = await response.json();
 
         // convert data to array

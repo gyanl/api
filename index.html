@@ -488,22 +488,22 @@
                 shareTweet();
             });
 
-            // take a screenshot of main div and share using system share dialog
-            function shareScreenshot() {
-                var main = document.querySelector("#main");
-                html2canvas(main).then(function(canvas) {
-                    var dataURL = canvas.toDataURL("image/png");
-                    var shareData = {
-                        files: [dataURL]
-                    }
-                    navigator.share(shareData);
-                });
-            }
+            // // take a screenshot of main div and share using system share dialog
+            // function shareScreenshot() {
+            //     var main = document.querySelector("#main");
+            //     html2canvas(main).then(function(canvas) {
+            //         var dataURL = canvas.toDataURL("image/png");
+            //         var shareData = {
+            //             files: [dataURL]
+            //         }
+            //         navigator.share(shareData);
+            //     });
+            // }
 
-            // event listener for button with id "share" that runs shareScreenshot()
-            document.querySelector("#share").addEventListener("click", function() {
-                shareScreenshot();
-            });
+            // // event listener for button with id "share" that runs shareScreenshot()
+            // document.querySelector("#share").addEventListener("click", function() {
+            //     shareScreenshot();
+            // });
 
                 // generate confetti
                 setInterval(function() {

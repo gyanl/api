@@ -6,8 +6,10 @@
     <meta charset="UTF-8" />
     <title>Get Your Acronym Now</title>
 
-    <!-- import Work Sans from Google Fonts -->
-    <link href="https://fonts.googleapis.com/css?family=Work+Sans:300,600" rel="stylesheet">
+    <!-- import Favo Sans Modern from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cherry+Swash&family=Quicksand:wght@500&display=swap" rel="stylesheet">
     <style>
         /* 3 Css variable for BGcolor, textcolor, accentcolor */
         :root {
@@ -19,9 +21,9 @@
         body {
             background-color: var(--BackgroundColor);
             color: #fff;
-            font-family: "Work Sans", Helvetica, Arial, sans-serif;
+            font-family: "Quicksand", Helvetica, Arial, sans-serif;
+            font-weight: 500;
             font-size: 1.5em;
-            font-weight: 300;
             line-height: 1.5;
             margin: 0;
             padding: 10%;
@@ -34,7 +36,7 @@
             left: 0;
             right: 0;
             font-size: 1em;
-            font-weight: 600;
+            font-weight: 700;
             margin: 20 auto 20px auto;
             padding: 0;
             text-align: center;
@@ -42,8 +44,9 @@
             transform: .2s;
         }
         #main {
+            font-family: "Cherry Swash", Helvetica, Arial, sans-serif;
             font-size: 4em;
-            font-weight: 300;
+            font-weight: 400;
             line-height: 1.1em;
             margin: 0;
             padding: 0;
@@ -118,7 +121,8 @@
         input{
             background: rgba(255, 255, 255, .08);
             border: none;
-            font-family: "Work Sans", Helvetica, Arial, sans-serif;
+            font-family: "Quicksand", Helvetica, Arial, sans-serif;
+            font-weight: 500;
             font-size: 1.2em;
             padding: 16px 28px;
             border-radius: 8px;
@@ -129,12 +133,12 @@
         }
 
         button{
-            font-family: "Work Sans", Helvetica, Arial, sans-serif;
+            font-family: "Quicksand", Helvetica, Arial, sans-serif;
+            font-weight: 500;
             background-color: var(--AccentColor);
             border: none;
             color: #fff;
             font-size: 1em;
-            font-weight: 400;
             margin: 28px 0 0 0;
             padding: 12px 24px;
             border-radius: 12px;
@@ -392,6 +396,8 @@
           // function to insert string into div with id "main"
           function insertString(string) {
               var main = document.getElementById("main");
+              // split string into array of words
+                var splitString = string.split(" ");
               main.innerHTML = string;
           }
 
@@ -400,7 +406,7 @@
                 var splitString = string.split(" ");
                 var newString = "";
                 for (var i = 0; i < splitString.length; i++) {
-                    newString += "<span class='blur-in' style='animation-delay: " + (i * 0.12) + "s'>" + splitString[i] + "</span> ";
+                    newString += "<span class='blur-in' style='animation-delay: " + (i * 0.12) + "s'>" + splitString[i] + "</span><br>";
                 }
                 return newString;
             }

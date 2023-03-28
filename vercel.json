@@ -11,6 +11,11 @@
         "src": "/acronyms/.*",
         "dest": "/server.js"
       }
+      // route to serve index.html for all other routes
+      {
+        "src": "/.*",
+        "dest": "/index.html"
+      }
     ]
   }
   

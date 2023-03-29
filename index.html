@@ -347,6 +347,7 @@
         // convert data to array
         // append contents of 'data' array to 'expand' array without overwriting previous contents
         expand = expand.concat(data);
+        expand = reverseArray(expand);
         // write expand to local storage
         // localStorage.setItem("expand", JSON.stringify(expand));
         console.log(expand);
@@ -387,6 +388,16 @@
         //       return array[randomIndex];
         //   }
 
+
+          // reverse order of objects in array
+            function reverseArray(array) {
+                var newArray = [];
+                for (var i = array.length - 1; i >= 0; i--) {
+                    newArray.push(array[i]);
+                }
+                return newArray;
+            }
+            
           // fn to get an array and return a random string that is not the same as the last one. Use recursion to ensure that the same string is not returned twice in a row.
             function randomString(array) {
                 var randomIndex = Math.floor(Math.random() * array.length);

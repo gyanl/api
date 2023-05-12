@@ -9,18 +9,10 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-const allowedOrigins = ['https://gyanl.com', 'https://gyanl.github.io', 'http://gyanl.com', 'http://gyanl.github.io' ];
-
-const corsOptions = {
-  origin: function (origin, callback) {
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true)
-    } else {
-      callback(new Error('Not allowed by CORS'))
-    }
-  },
-  optionsSuccessStatus: 200 // For legacy browser support
-}
+// const corsOptions = {
+//   origin: 'https://gyanl.com',
+//   optionsSuccessStatus: 200 // For legacy browser support
+// }
 
 app.use(cors(corsOptions));
 

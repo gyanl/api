@@ -12,10 +12,6 @@
         "dest": "/server.js"
       },
       {
-        "src": "/quickstart/.*",
-        "dest": "/server.js"
-      },
-      {
         "src": "/.*",
         "dest": "index.html"
       }

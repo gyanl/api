@@ -19,41 +19,17 @@ app.use((req, res, next) => {
   next();
 });
 
-// app.use(express.static('public'));
-// app.get('/', (req, res) => {
-//   res.sendFile(path.join(__dirname, 'index.html'));
-// });
+app.use(express.static('public'));
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
 
-// app.get('/acronyms/:nameToExpand', async (req, res) => {
-//   const nameToExpand = req.params.nameToExpand;
-//   try {
-//     const response = await openai.createCompletion({
-//       model: "text-davinci-003",
-//       prompt: `Generate 10 light-hearted and funny acronyms for the word ${nameToExpand}. Make sure they are not mean-spirited or offensive. Return results as a comma separated list`,
-//       temperature: 0.7,
-//       max_tokens: 256,
-//       top_p: 1,
-//       frequency_penalty: 0,
-//       presence_penalty: 0,
-//     });
-
-//     const acros = response.data.choices[0].text
-//       .replace(/\.|\r|\n/gm, '')
-//       .split(', ')
-//       .map(x => x.trim());
-//     res.json(acros);
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).send('An error occurred while processing your request.');
-//   }
-// });
-
-app.get('/quickstart/:prompt', async (req, res) => {
-  const prompt = req.params.prompt;
+app.get('/acronyms/:nameToExpand', async (req, res) => {
+  const nameToExpand = req.params.nameToExpand;
   try {
     const response = await openai.createCompletion({
       model: "text-davinci-003",
-      prompt: `Generate a title and 4 creative lines with the prompt ${prompt}. Format result as HTML.`,
+      prompt: `Generate 10 light-hearted and funny acronyms for the word ${nameToExpand}. Make sure they are not mean-spirited or offensive. Return results as a comma separated list`,
       temperature: 0.7,
       max_tokens: 256,
       top_p: 1,
@@ -61,13 +37,37 @@ app.get('/quickstart/:prompt', async (req, res) => {
       presence_penalty: 0,
     });
 
-    const qsresult = response.data.choices[0].text;
-    res.json(qsresult);
+    const acros = response.data.choices[0].text
+      .replace(/\.|\r|\n/gm, '')
+      .split(', ')
+      .map(x => x.trim());
+    res.json(acros);
   } catch (error) {
     console.error(error);
     res.status(500).send('An error occurred while processing your request.');
   }
 });
+
+// app.get('/quickstart/:prompt', async (req, res) => {
+//   const prompt = req.params.prompt;
+//   try {
+//     const response = await openai.createCompletion({
+//       model: "text-davinci-003",
+//       prompt: `Generate a title and 4 creative lines with the prompt ${prompt}. Format result as HTML.`,
+//       temperature: 0.7,
+//       max_tokens: 256,
+//       top_p: 1,
+//       frequency_penalty: 0,
+//       presence_penalty: 0,
+//     });
+
+//     const qsresult = response.data.choices[0].text;
+//     res.json(qsresult);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send('An error occurred while processing your request.');
+//   }
+// });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

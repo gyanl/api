@@ -48,26 +48,26 @@ app.get('/acronyms/:nameToExpand', async (req, res) => {
   }
 });
 
-// app.get('/quickstart/:prompt', async (req, res) => {
-//   const prompt = req.params.prompt;
-//   try {
-//     const response = await openai.createCompletion({
-//       model: "text-davinci-003",
-//       prompt: `Generate a title and 4 creative lines with the prompt ${prompt}. Format result as HTML.`,
-//       temperature: 0.7,
-//       max_tokens: 256,
-//       top_p: 1,
-//       frequency_penalty: 0,
-//       presence_penalty: 0,
-//     });
+app.get('/quickstart/:prompt', async (req, res) => {
+  const prompt = req.params.prompt;
+  try {
+    const response = await openai.createCompletion({
+      model: "text-davinci-003",
+      prompt: `Write a title and 6 lines for the prompt ${nameToExpand}. Format the result as HTML.`,s
+      temperature: 0.7,
+      max_tokens: 256,
+      top_p: 1,
+      frequency_penalty: 0,
+      presence_penalty: 0,
+    });
 
-//     const qsresult = response.data.choices[0].text;
-//     res.json(qsresult);
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).send('An error occurred while processing your request.');
-//   }
-// });
+    const result = response.data.choices[0].text;
+    res.json(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('An error occurred while processing your request.');
+  }
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

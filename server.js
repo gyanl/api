@@ -50,7 +50,7 @@ app.get('/acronyms/:nameToExpand', async (req, res) => {
 });
 
 app.get('/quickstart/:prompt', async (req, res) => {
-  const nameToExpand = req.params.nameToExpand;
+  const prompt = req.params.prompt;
   try {
     const response = await openai.createCompletion({
       model: "text-davinci-003",

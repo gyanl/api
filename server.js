@@ -53,7 +53,7 @@ app.get('/quickstart/:prompt', async (req, res) => {
   try {
     const response = await openai.createCompletion({
       model: "text-davinci-003",
-      prompt: `Write a title and 6 lines for the prompt ${prompt}. Format the result as HTML.`,
+      prompt: `Write a title and a short response for the prompt ${prompt}. Format the result as HTML.`,
       temperature: 0.7,
       max_tokens: 256,
       top_p: 1,

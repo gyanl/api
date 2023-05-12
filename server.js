@@ -1,5 +1,4 @@
 require("dotenv").config();
-const cors = require('cors');
 const express = require('express');
 const bodyParser = require('body-parser');
 const { Configuration, OpenAIApi } = require("openai");
@@ -9,23 +8,16 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-const corsOptions = {
-  origin: 'https://gyanl.com',
-  optionsSuccessStatus: 200 // For legacy browser support
-}
-
-app.use(cors(corsOptions));
-
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
 });
 const openai = new OpenAIApi(configuration);
 
-// app.use((req, res, next) => {
-//   res.header('Access-Control-Allow-Origin', 'https://gyanl.com');
-//   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-//   next();
-// });
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'https://gyanl.com');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  next();
+});
 
 // app.use(express.static('public'));
 // app.get('/', (req, res) => {

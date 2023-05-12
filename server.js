@@ -49,6 +49,27 @@ app.get('/acronyms/:nameToExpand', async (req, res) => {
   }
 });
 
+app.get('/quickstart/:prompt', async (req, res) => {
+  const nameToExpand = req.params.nameToExpand;
+  try {
+    const response = await openai.createCompletion({
+      model: "text-davinci-003",
+      prompt: `Generate 4 creative paragraphs with the prompt ${prompt}. Format result as HTML.`,
+      temperature: 0.7,
+      max_tokens: 256,
+      top_p: 1,
+      frequency_penalty: 0,
+      presence_penalty: 0,
+    });
+
+    const qsresult = response.data.choices[0].text;
+    res.json(qsresult);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('An error occurred while processing your request.');
+  }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);

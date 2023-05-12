@@ -20,7 +20,7 @@ app.use((req, res, next) => {
 });
 
 app.use(express.static('public'));
-
+s
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
@@ -54,7 +54,7 @@ app.get('/quickstart/:prompt', async (req, res) => {
   try {
     const response = await openai.createCompletion({
       model: "text-davinci-003",
-      prompt: `Generate 4 creative paragraphs with the prompt ${prompt}. Format result as HTML.`,
+      prompt: `Generate a title and 4 creative lines with the prompt ${prompt}. Format result as HTML.`,
       temperature: 0.7,
       max_tokens: 256,
       top_p: 1,

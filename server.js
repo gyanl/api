@@ -9,7 +9,7 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-const allowedOrigins = ['https://gyanl.com/wordpad/', 'https://gyanl.github.io', 'http://gyanl.com', 'http://gyanl.github.io' ];
+const allowedOrigins = ['https://gyanl.com', 'https://gyanl.github.io', 'http://gyanl.com', 'http://gyanl.github.io' ];
 
 const corsOptions = {
   origin: function (origin, callback) {

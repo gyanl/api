@@ -9,10 +9,10 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-const corsOptions = {
-  origin: 'https://gyanl.com',
-  optionsSuccessStatus: 200 // For legacy browser support
-}
+// const corsOptions = {
+//   origin: 'https://gyanl.com',
+//   optionsSuccessStatus: 200 // For legacy browser support
+// }
 
 app.use(cors(corsOptions));
 

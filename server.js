@@ -85,7 +85,7 @@ module.exports = async (req, res) => {
         messages: [
           {
             role: "system",
-            content: "You are a helpful assistant that generates funny and light-hearted acronyms for a given word that will be displayed on a website. You return results as a comma separated list with no other text, so that the website can separate them and display them as a list."
+            content: "You are a helpful assistant that generates funny and light-hearted acronyms for a given word that will be displayed on a website. Return a JSON object with an 'acronyms' array containing the acronyms, and a 'metadata' object with 'word' and 'count' fields. Example format: {\"acronyms\": [\"Acronym 1\", \"Acronym 2\"], \"metadata\": {\"word\": \"WORD\", \"count\": 2}}"
           },
           {
             role: "user",
@@ -94,6 +94,7 @@ module.exports = async (req, res) => {
         ],
         temperature: 0.7,
         max_tokens: 256,
+        response_format: { type: "json_object" }
       });
 
       const content = completion.choices[0]?.message?.content;
@@ -101,17 +102,16 @@ module.exports = async (req, res) => {
         throw new Error('No response content from OpenAI');
       }
 
-      const acros = content
-        .replace(/\.|\r|\n/gm, '')
-        .split(', ')
-        .map(x => x.trim())
-        .filter(x => x.length > 0);
-
-      if (acros.length === 0) {
-        throw new Error('No valid acronyms generated');
+      try {
+        const result = JSON.parse(content);
+        if (!result.acronyms || !Array.isArray(result.acronyms) || result.acronyms.length === 0) {
+          throw new Error('Invalid response format: missing or empty acronyms array');
+        }
+        res.json(result);
+      } catch (parseError) {
+        console.error('Error parsing JSON response:', parseError);
+        throw new Error('Invalid JSON response from OpenAI');
       }
-
-      res.json(acros);
       return;
     }
 

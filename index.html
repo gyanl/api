@@ -349,12 +349,17 @@
                 // change loading div to display none
                 document.querySelector("#loading").style.display = "none";
                 
-                if (!Array.isArray(data) || data.length === 0) {
+                if (!data.acronyms || !Array.isArray(data.acronyms) || data.acronyms.length === 0) {
                     throw new Error('Invalid response format or empty results');
                 }
                 
+                // Update metadata if available
+                if (data.metadata) {
+                    document.querySelector("#title").innerHTML = `What is <span id="name-insert">${data.metadata.word}</span>?`;
+                }
+                
                 // convert data to array
-                expand = expand.concat(data);
+                expand = expand.concat(data.acronyms);
                 expand = reverseArray(expand);
                 console.log(expand);
                 updatePageWithNewAcronym();
@@ -537,7 +542,8 @@
 
             // Take name and expansion and put into tweet
             function shareTweet() {
-                var tweet = "https://twitter.com/intent/tweet?text=" + "I just found out that an AI model thinks " + name + " stands for " + expand[lastpicked] + ". Find out what AI thinks your name really stands for at gyanl.com/aicronym";
+                var tweet = "https://twitter.com/intent/tweet?text=" + 
+                    encodeURIComponent(`I just found out that an AI model thinks ${name} stands for ${expand[lastpicked]}. Find out what AI thinks your name really stands for at gyanl.com/aicronym`);
                 window.open(tweet, "_blank");
             }
 

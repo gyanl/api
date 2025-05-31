@@ -8,16 +8,16 @@
     ],
     "routes": [
       {
-        "src": "/acronyms/.*",
+        "src": "/acronyms/(.*)",
         "dest": "/server.js"
       },
       {
-        "src": "/quickstart/.*",
+        "src": "/quickstart/(.*)",
         "dest": "/server.js"
       },
       {
-        "src": "/.*",
-        "dest": "index.html"
+        "src": "/(.*)",
+        "dest": "/server.js"
       }
     ]
   }

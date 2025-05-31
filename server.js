@@ -81,19 +81,19 @@ module.exports = async (req, res) => {
       }
 
       const completion = await openai.chat.completions.create({
-        model: "gpt-3.5-turbo",
+        model: "gpt-4o",
         messages: [
           {
             role: "system",
-            content: "You are a helpful assistant that generates funny and light-hearted acronyms for a given word that will be displayed on a website. Return a JSON object with an 'acronyms' array containing the acronyms, and a 'metadata' object with 'word' and 'count' fields. Example format: {\"acronyms\": [\"Acronym 1\", \"Acronym 2\"], \"metadata\": {\"word\": \"WORD\", \"count\": 2}}"
+            content: "You are a playful and witty assistant that generates clever, light-hearted, and family-friendly acronyms for a given word. The acronyms should feel creative, delightful, and suitable for display to a general audience, including children. Avoid anything mean-spirited, crude, political, or controversial. Each acronym should expand each letter of the input word into a word in the acronym. For example, 'DOG' could expand to 'Daring Optimistic Genius'. Return your output in this JSON format: { \"acronyms\": [\"Acronym 1\", \"Acronym 2\", ...], \"metadata\": { \"word\": \"WORD\", \"count\": N } }."
           },
           {
             role: "user",
-            content: `Generate 10 light-hearted and funny acronyms for the word ${nameToExpand}. Make sure they are not mean-spirited or offensive.`
+            content: `Generate 10 clever, light-hearted, and family-friendly acronyms for the word "${nameToExpand}". Each acronym should expand the word letter-by-letter. Ensure the acronyms are varied, playful, and suitable for all ages. Return the output as JSON as described above.`
           }
         ],
-        temperature: 0.7,
-        max_tokens: 256,
+        temperature: 0.8,
+        max_tokens: 512,
         response_format: { type: "json_object" }
       });
 

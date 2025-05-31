@@ -79,21 +79,28 @@ module.exports = async (req, res) => {
         return;
       }
 
-      const response = await openai.chat.completions.create({
+      const completion = await openai.chat.completions.create({
         model: "gpt-3.5-turbo",
-        messages: [{
-          role: "user",
-          content: `Generate 10 light-hearted and funny acronyms for the word ${nameToExpand}. Make sure they are not mean-spirited or offensive. Return results as a comma separated list`
-        }],
+        messages: [
+          {
+            role: "system",
+            content: "You are a helpful assistant that generates funny and light-hearted acronyms."
+          },
+          {
+            role: "user",
+            content: `Generate 10 light-hearted and funny acronyms for the word ${nameToExpand}. Make sure they are not mean-spirited or offensive. Return results as a comma separated list`
+          }
+        ],
         temperature: 0.7,
         max_tokens: 256,
       });
 
-      if (!response.choices || !response.choices[0] || !response.choices[0].message) {
-        throw new Error('Invalid response format from OpenAI');
+      const content = completion.choices[0]?.message?.content;
+      if (!content) {
+        throw new Error('No response content from OpenAI');
       }
 
-      const acros = response.choices[0].message.content
+      const acros = content
         .replace(/\.|\r|\n/gm, '')
         .split(', ')
         .map(x => x.trim())
@@ -109,22 +116,28 @@ module.exports = async (req, res) => {
 
     if (segments[0] === 'quickstart' && segments[1]) {
       const prompt = segments[1];
-      const response = await openai.chat.completions.create({
+      const completion = await openai.chat.completions.create({
         model: "gpt-3.5-turbo",
-        messages: [{
-          role: "user",
-          content: `Write a title and a short response for the prompt ${prompt}. Format the result as HTML.`
-        }],
+        messages: [
+          {
+            role: "system",
+            content: "You are a helpful assistant that generates HTML-formatted responses."
+          },
+          {
+            role: "user",
+            content: `Write a title and a short response for the prompt ${prompt}. Format the result as HTML.`
+          }
+        ],
         temperature: 0.7,
         max_tokens: 256,
       });
 
-      if (!response.choices || !response.choices[0] || !response.choices[0].message) {
-        throw new Error('Invalid response format from OpenAI');
+      const content = completion.choices[0]?.message?.content;
+      if (!content) {
+        throw new Error('No response content from OpenAI');
       }
 
-      const result = response.choices[0].message.content;
-      res.json(result);
+      res.json(content);
       return;
     }
 

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
 <head>
     <meta property="og:image" content="https://gyanl.com/aicronym/aicronym.png" />
     <meta charset="UTF-8" />
@@ -9,7 +10,8 @@
     <!-- import Favo Sans Modern from Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@100&family=Quicksand:wght@500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@100&family=Quicksand:wght@500&display=swap"
+        rel="stylesheet">
     <style>
         /* 3 Css variable for BGcolor, textcolor, accentcolor */
         :root {
@@ -30,6 +32,7 @@
             text-align: center;
             transition: 1.5s;
         }
+
         #title {
             position: absolute;
             top: 100px;
@@ -43,9 +46,10 @@
             color: var(--AccentColor);
             transform: .5s;
         }
+
         #main {
             font-family: "Archivo", Helvetica, Arial, sans-serif;
-            font-size: 4em;
+            font-size: 2em;
             font-weight: 100;
             line-height: 1.1em;
             margin: 0;
@@ -55,27 +59,28 @@
             position: absolute;
             top: 40%;
             left: 50%;
-            transform: translate(-50%,-50%);
+            transform: translate(-50%, -50%);
             /* animation: glow 2s ease-in-out infinite alternate; */
         }
 
-        .disclaimer{
+        .disclaimer {
             padding-top: 20px;
             font-size: medium;
             opacity: .5;
             color: var(--TextColor);
         }
-        
+
         /* define glow animation using box shadow */
         @keyframes glow {
             from {
                 text-shadow: 0 0 10px var(--AccentColor), 0 0 20px var(--AccentColor), 0 0 40px var(--AccentColor);
             }
+
             to {
                 text-shadow: 0 0 20px var(--AccentColor), 0 0 40px var(--AccentColor), 0 0 20px var(--AccentColor);
             }
         }
-        
+
         .lds-ripple {
             margin-top: 20px;
             display: inline-block;
@@ -83,49 +88,55 @@
             width: 80px;
             height: 80px;
         }
+
         .lds-ripple div {
-        position: absolute;
-        border: 4px solid var(--TextColor);
-        opacity: 1;
-        border-radius: 50%;
-        animation: lds-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+            position: absolute;
+            border: 4px solid var(--TextColor);
+            opacity: 1;
+            border-radius: 50%;
+            animation: lds-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
         }
-.lds-ripple div:nth-child(2) {
-  animation-delay: -0.5s;
-}
-@keyframes lds-ripple {
-  0% {
-    top: 36px;
-    left: 36px;
-    width: 0;
-    height: 0;
-    opacity: 0;
-  }
-  4.9% {
-    top: 36px;
-    left: 36px;
-    width: 0;
-    height: 0;
-    opacity: 0;
-  }
-  5% {
-    top: 36px;
-    left: 36px;
-    width: 0;
-    height: 0;
-    opacity: 1;
-  }
-  100% {
-    top: 0px;
-    left: 0px;
-    width: 72px;
-    height: 72px;
-    opacity: 0;
-  }
-}
+
+        .lds-ripple div:nth-child(2) {
+            animation-delay: -0.5s;
+        }
+
+        @keyframes lds-ripple {
+            0% {
+                top: 36px;
+                left: 36px;
+                width: 0;
+                height: 0;
+                opacity: 0;
+            }
+
+            4.9% {
+                top: 36px;
+                left: 36px;
+                width: 0;
+                height: 0;
+                opacity: 0;
+            }
+
+            5% {
+                top: 36px;
+                left: 36px;
+                width: 0;
+                height: 0;
+                opacity: 1;
+            }
+
+            100% {
+                top: 0px;
+                left: 0px;
+                width: 72px;
+                height: 72px;
+                opacity: 0;
+            }
+        }
 
 
-        input{
+        input {
             background: rgba(255, 255, 255, .08);
             border: none;
             font-family: "Quicksand", Helvetica, Arial, sans-serif;
@@ -139,7 +150,7 @@
             text-align: center;
         }
 
-        button{
+        button {
             font-family: "Quicksand", Helvetica, Arial, sans-serif;
             font-weight: 500;
             background-color: var(--AccentColor);
@@ -154,20 +165,20 @@
             border: 2px var(--AccentColor) solid;
         }
 
-        button:hover{
+        button:hover {
             background-color: var(--BackgroundColor);
             color: #eee;
             border: 2px var(--AccentColor) solid;
         }
-        
-        button:active{
+
+        button:active {
             background-color: #000;
             color: #ddd;
             transform: translateY(4px);
             transition: .2s;
         }
 
-        .button-container{
+        .button-container {
             position: absolute;
             bottom: 10%;
             left: 35%;
@@ -175,84 +186,88 @@
             margin: auto;
         }
 
-        #error{
+        #error {
             font-size: .8em;
             width: auto;
             text: rgba(255, 255, 255, .8);
             /* background: rgba(0, 0, 0, .8); */
         }
 
-        .confetti{
+        .confetti {
             background-color: var(--AccentColor);
             z-index: -1;
         }
 
 
-    /* class to animate from blurred element to unblurred element */
-    .blur-in {
-        -webkit-animation: blur-in 1s forwards;
-        -moz-animation: blur-in 1s forwards;
-        -o-animation: blur-in 1s forwards;
-        animation: blur-in 1s forwards;
-    }
-
-    .bounce-in{
-        -webkit-animation: bounce-in 1s ease-in-out;
-        -moz-animation: bounce-in 1s ease-in-out;
-        -o-animation: bounce-in 1s ease-in-out;
-        animation: bounce-in 1s ease-in-out;
-    }
-
-    /* blur-in definition for all browsers*/
-    @-webkit-keyframes blur-in {
-        0% {
-            -webkit-filter: blur(10px);
-            filter: blur(10px);
-            opacity: 0;
-            transform: translateY(10%);
-            color: var(--BackgroundColor);    
-            text-shadow: 0 0 0px var(--TextColor), 0 0 0px var(--TextColor), 0 0 0px var(--TextColor);
+        /* class to animate from blurred element to unblurred element */
+        .blur-in {
+            -webkit-animation: blur-in 1s forwards;
+            -moz-animation: blur-in 1s forwards;
+            -o-animation: blur-in 1s forwards;
+            animation: blur-in 1s forwards;
         }
-        100% {
-            -webkit-filter: blur(0);
-            filter: blur(0);
-            opacity: 1;
-            transform: translateY(0px);
-            color: var(--TextColor);    
-            text-shadow: 0 0 10px var(--AccentColor), 0 0 20px var(--AccentColor), 0 0 40px var(--AccentColor);
-       
+
+        .bounce-in {
+            -webkit-animation: bounce-in 1s ease-in-out;
+            -moz-animation: bounce-in 1s ease-in-out;
+            -o-animation: bounce-in 1s ease-in-out;
+            animation: bounce-in 1s ease-in-out;
         }
-    }
 
-    @-webkit-keyframes bounce-in {
-        0% {
-            transform: translateY(10%);
+        /* blur-in definition for all browsers*/
+        @-webkit-keyframes blur-in {
+            0% {
+                -webkit-filter: blur(10px);
+                filter: blur(10px);
+                opacity: 0;
+                transform: translateY(10%);
+                color: var(--BackgroundColor);
+                text-shadow: 0 0 0px var(--TextColor), 0 0 0px var(--TextColor), 0 0 0px var(--TextColor);
+            }
+
+            100% {
+                -webkit-filter: blur(0);
+                filter: blur(0);
+                opacity: 1;
+                transform: translateY(0px);
+                color: var(--TextColor);
+                text-shadow: 0 0 10px var(--AccentColor), 0 0 20px var(--AccentColor), 0 0 40px var(--AccentColor);
+
+            }
         }
-        100% {
-            transform: translateY(0px);
+
+        @-webkit-keyframes bounce-in {
+            0% {
+                transform: translateY(10%);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
         }
-    }
 
-    .ask{
-        display: none;
-    }
+        .ask {
+            display: none;
+        }
 
-    .generate{
-        display: none;
-    }
-
+        .generate {
+            display: none;
+        }
 
 
 
-            /* mobile only css */
-    @media only screen and (max-width: 600px) {
+
+        /* mobile only css */
+        @media only screen and (max-width: 600px) {
 
             body {
                 padding: 25% 5% 0 5%;
             }
-            #title{
+
+            #title {
                 top: 40px;
             }
+
             #main {
                 position: relative;
                 font-size: 2.2em;
@@ -260,41 +275,48 @@
                 left: auto;
                 transform: none;
             }
+
             button {
                 font-size: .8em;
                 margin: 28px 0 0 0;
                 padding: 12px 24px;
                 border-radius: 12px;
             }
-            .button-container{
+
+            .button-container {
                 width: 80vw;
                 left: 10vw;
                 bottom: 3%;
-        }
-            input{
-            font-size: .9em;
-            padding: 16px 18px 16px 18px;
-            width: 80vw;
-        }
+            }
+
+            input {
+                font-size: .9em;
+                padding: 16px 18px 16px 18px;
+                width: 80vw;
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="generate">
         <div id="title">What is <span id="name-insert">Gyan</span>?</div>
         <div id="loading">
-            
-            <div class="lds-ripple"><div></div><div></div></div>
+
+            <div class="lds-ripple">
+                <div></div>
+                <div></div>
+            </div>
             <p>Thinking...</p>
         </div>
         <div id="main">
-            
+
         </div>
         <div class="button-container">
             <button id="regenerate">Another One!</button>
             <!-- <button id="share">Share</button>             -->
             <button id="tweet">Tweet</button>
-            <div class="disclaimer">Does something look broken? Refreshing the page might fix it. Might.</div>
+            <div class="disclaimer">This is unstable software. 6 letters or shorter give best results.</div>
         </div>
 
     </div>
@@ -302,11 +324,7 @@
     <div class="ask">
         <div id="title">GYAN: Get Your Acronym Now</div>
         <p>Type something to start generating your own acronym</p>
-        <input 
-        id="name-textbox"
-        type="text" 
-        placeholder="What's your name?"
-        >
+        <input id="name-textbox" type="text" placeholder="What's your name?">
         <p></p>
         <div class="button-container">
             <button id="generate">Generate</button>
@@ -336,7 +354,7 @@
         //         return [];
         //     }
         //     }
-        
+
         // function to fetch acronyms from openai api
         async function fetchAcronyms(name) {
             try {
@@ -345,19 +363,19 @@
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 const data = await response.json();
-                
+
                 // change loading div to display none
                 document.querySelector("#loading").style.display = "none";
-                
+
                 if (!data.acronyms || !Array.isArray(data.acronyms) || data.acronyms.length === 0) {
                     throw new Error('Invalid response format or empty results');
                 }
-                
+
                 // Update metadata if available
                 if (data.metadata) {
                     document.querySelector("#title").innerHTML = `What is <span id="name-insert">${data.metadata.word}</span>?`;
                 }
-                
+
                 // convert data to array
                 expand = expand.concat(data.acronyms);
                 expand = reverseArray(expand);
@@ -391,14 +409,14 @@
                 }
             }
         }
-        
+
         // run function viewdecider on page load
         viewDecider(name);
 
 
 
-          var lastpicked = 0;
-          // function to take an array and return a random string
+        var lastpicked = 0;
+        // function to take an array and return a random string
         //   function randomString(array) {
         //       var randomIndex = Math.floor(Math.random() * array.length);
         //       lastpicked = randomIndex;
@@ -406,190 +424,191 @@
         //   }
 
 
-          // reverse order of objects in array
-            function reverseArray(array) {
-                var newArray = [];
-                for (var i = array.length - 1; i >= 0; i--) {
-                    newArray.push(array[i]);
-                }
-                return newArray;
+        // reverse order of objects in array
+        function reverseArray(array) {
+            var newArray = [];
+            for (var i = array.length - 1; i >= 0; i--) {
+                newArray.push(array[i]);
             }
-            
-          // fn to get an array and return a random string that is not the same as the last one. Use recursion to ensure that the same string is not returned twice in a row.
-            function randomString(array) {
-                var randomIndex = Math.floor(Math.random() * array.length);
-                if (randomIndex == lastpicked) {
-                    return randomString(array);
-                } else {
-                    lastpicked = randomIndex;
-                    return array[randomIndex];
-                }
+            return newArray;
+        }
+
+        // fn to get an array and return a random string that is not the same as the last one. Use recursion to ensure that the same string is not returned twice in a row.
+        function randomString(array) {
+            var randomIndex = Math.floor(Math.random() * array.length);
+            if (randomIndex == lastpicked) {
+                return randomString(array);
+            } else {
+                lastpicked = randomIndex;
+                return array[randomIndex];
             }
+        }
 
 
-            // fn to get next string at nth position in array and increment n by 1
-            function nextString(array) {
-                var nextIndex = lastpicked + 1;
-                if (nextIndex >= array.length) {
-                    nextIndex = 0;
-                    fetchAcronyms(name);
-                    document.querySelector("#loading").style.display = "inline-block";
-                }
-                lastpicked = nextIndex;
-                return array[nextIndex];
+        // fn to get next string at nth position in array and increment n by 1
+        function nextString(array) {
+            var nextIndex = lastpicked + 1;
+            if (nextIndex >= array.length) {
+                nextIndex = 0;
+                fetchAcronyms(name);
+                document.querySelector("#loading").style.display = "inline-block";
             }
-      
-          // function to insert string into div with id "main"
-          function insertString(string) {
-              var main = document.getElementById("main");
-              // split string into array of words
-                var splitString = string.split(" ");
-              main.innerHTML = string;
-          }
+            lastpicked = nextIndex;
+            return array[nextIndex];
+        }
 
-          // function to every word of a string into it's own span with an increasing animation delay
-            function animateString(string) {
-                var splitString = string.split(" ");
-                var newString = "";
-                for (var i = 0; i < splitString.length; i++) {
-                    newString += "<span class='blur-in' style='animation-delay: " + (i * 0.12) + "s'>" + splitString[i] + "</span><br>";
-                }
-                return newString;
+        // function to insert string into div with id "main"
+        function insertString(string) {
+            var main = document.getElementById("main");
+            // split string into array of words
+            var splitString = string.split(" ");
+            main.innerHTML = string;
+        }
+
+        // function to every word of a string into it's own span with an increasing animation delay
+        function animateString(string) {
+            var splitString = string.split(" ");
+            var newString = "";
+            for (var i = 0; i < splitString.length; i++) {
+                newString += "<span class='blur-in' style='animation-delay: " + (i * 0.12) + "s'>" + splitString[i] + "</span><br>";
             }
+            return newString;
+        }
 
 
-            // function to generate a random HSL color
-            function generateColors() {
-                var hue = Math.floor(Math.random() * 360);
+        // function to generate a random HSL color
+        function generateColors() {
+            var hue = Math.floor(Math.random() * 360);
 
-                var saturation = 70;
-                var lightness = 45;
-                genAccent =  "hsl(" + (hue - 20) + ", " + saturation + "%, " + lightness + "%)";
-                document.documentElement.style.setProperty('--AccentColor', genAccent);
+            var saturation = 70;
+            var lightness = 45;
+            genAccent = "hsl(" + (hue - 20) + ", " + saturation + "%, " + lightness + "%)";
+            document.documentElement.style.setProperty('--AccentColor', genAccent);
 
-                var saturation = 90;
-                var lightness = 5;
-                genBackground =  "hsl(" + (hue + 10) + ", " + saturation + "%, " + lightness + "%)";
-                document.documentElement.style.setProperty('--BackgroundColor', genBackground);  
+            var saturation = 90;
+            var lightness = 5;
+            genBackground = "hsl(" + (hue + 10) + ", " + saturation + "%, " + lightness + "%)";
+            document.documentElement.style.setProperty('--BackgroundColor', genBackground);
 
-                var saturation = 70;
-                var lightness = 80;
-                genText =  "hsl(" + hue + ", " + saturation + "%, " + lightness + "%)";
-                document.documentElement.style.setProperty('--TextColor', genText);              
-            }
+            var saturation = 70;
+            var lightness = 80;
+            genText = "hsl(" + hue + ", " + saturation + "%, " + lightness + "%)";
+            document.documentElement.style.setProperty('--TextColor', genText);
+        }
 
-            // fn to make title bounce in
-            function titleBounce() {
-                var title = document.getElementById("title");
-                title.classList.add("bounce-in");
-            }
+        // fn to make title bounce in
+        function titleBounce() {
+            var title = document.getElementById("title");
+            title.classList.add("bounce-in");
+        }
 
-            // fn to remove bounce-in class from title
-            function removeBounce() {
-                var title = document.getElementById("title");
-                title.classList.remove("bounce-in");
-            }
-        
-          generateColors();
-          titleBounce();
+        // fn to remove bounce-in class from title
+        function removeBounce() {
+            var title = document.getElementById("title");
+            title.classList.remove("bounce-in");
+        }
+
+        generateColors();
+        titleBounce();
         //   insertString(animateString(randomString(expand)));
 
-          function updatePageWithNewAcronym() {
+        function updatePageWithNewAcronym() {
             generateColors();
             insertString(animateString(nextString(expand)));
             removeBounce();
             void document.getElementById("title").offsetWidth; // trigger reflow
             titleBounce();
-          }
+        }
 
-            // on clicking button with id "regenerate", runs updatePageWithNewAcronym()
-            document.querySelector("#regenerate").addEventListener("click", function() {
-                updatePageWithNewAcronym();
-            });
+        // on clicking button with id "regenerate", runs updatePageWithNewAcronym()
+        document.querySelector("#regenerate").addEventListener("click", function () {
+            updatePageWithNewAcronym();
+        });
 
-            // event listener for form that runs regenerate function
-            // document.querySelector("form").addEventListener("submit", function(e) {
-            //     regenerate();
-            // });
-        
+        // event listener for form that runs regenerate function
+        // document.querySelector("form").addEventListener("submit", function(e) {
+        //     regenerate();
+        // });
 
-            // event listener for button with id "generate"
-            document.querySelector("#generate").addEventListener("click", function() {
-                var input = document.querySelector("#name-textbox").value.trim();
-                if (input === "") {
-                    document.querySelector("#error").innerHTML = "Please enter a name.";
-                    return;
-                }
-                if (input.length > 20) {
-                    document.querySelector("#error").innerHTML = "Name is too long. Please keep it under 20 characters.";
-                    return;
-                }
-                if (!/^[A-Za-z0-9\s]+$/.test(input)) {
-                    document.querySelector("#error").innerHTML = "Please use only letters, numbers, and spaces.";
-                    return;
-                }
-                // navigate to new page with input passed in the url
-                window.location.href = "?name=" + encodeURIComponent(input);
-            });
 
-            // Auto-uppercase for input field with id "name-textbox"
-            document.querySelector("#name-textbox").addEventListener("keyup", function(e) {
-                if (e.key === "Enter") {
-                    document.querySelector("#generate").click();
-                }
-                document.querySelector("#name-textbox").value = document.querySelector("#name-textbox").value.toUpperCase();
-            });
-
-            // Take name and expansion and put into tweet
-            function shareTweet() {
-                var tweet = "https://twitter.com/intent/tweet?text=" + 
-                    encodeURIComponent(`I just found out that an AI model thinks ${name} stands for ${expand[lastpicked]}. Find out what AI thinks your name really stands for at gyanl.com/aicronym`);
-                window.open(tweet, "_blank");
+        // event listener for button with id "generate"
+        document.querySelector("#generate").addEventListener("click", function () {
+            var input = document.querySelector("#name-textbox").value.trim();
+            if (input === "") {
+                document.querySelector("#error").innerHTML = "Please enter a name.";
+                return;
             }
+            if (input.length > 20) {
+                document.querySelector("#error").innerHTML = "Name is too long. Please keep it under 20 characters.";
+                return;
+            }
+            if (!/^[A-Za-z0-9\s]+$/.test(input)) {
+                document.querySelector("#error").innerHTML = "Please use only letters, numbers, and spaces.";
+                return;
+            }
+            // navigate to new page with input passed in the url
+            window.location.href = "?name=" + encodeURIComponent(input);
+        });
 
-            // event listener for button with id "twitter" that runs shareTweet()
-            document.querySelector("#tweet").addEventListener("click", function() {
-                shareTweet();
-            });
+        // Auto-uppercase for input field with id "name-textbox"
+        document.querySelector("#name-textbox").addEventListener("keyup", function (e) {
+            if (e.key === "Enter") {
+                document.querySelector("#generate").click();
+            }
+            document.querySelector("#name-textbox").value = document.querySelector("#name-textbox").value.toUpperCase();
+        });
 
-            // // take a screenshot of main div and share using system share dialog
-            // function shareScreenshot() {
-            //     var main = document.querySelector("#main");
-            //     html2canvas(main).then(function(canvas) {
-            //         var dataURL = canvas.toDataURL("image/png");
-            //         var shareData = {
-            //             files: [dataURL]
-            //         }
-            //         navigator.share(shareData);
-            //     });
-            // }
+        // Take name and expansion and put into tweet
+        function shareTweet() {
+            var tweet = "https://twitter.com/intent/tweet?text=" +
+                encodeURIComponent(`I just found out that an AI model thinks ${name} stands for ${expand[lastpicked]}. Find out what AI thinks your name really stands for at gyanl.com/aicronym`);
+            window.open(tweet, "_blank");
+        }
 
-            // // event listener for button with id "share" that runs shareScreenshot()
-            // document.querySelector("#share").addEventListener("click", function() {
-            //     shareScreenshot();
-            // });
+        // event listener for button with id "twitter" that runs shareTweet()
+        document.querySelector("#tweet").addEventListener("click", function () {
+            shareTweet();
+        });
 
-                // generate confetti
-                setInterval(function() {
-                var x = Math.floor(Math.random() * window.innerWidth);
-                var y = Math.floor(Math.random() * window.innerHeight);
-                var size = Math.floor(Math.random() * 10);
+        // // take a screenshot of main div and share using system share dialog
+        // function shareScreenshot() {
+        //     var main = document.querySelector("#main");
+        //     html2canvas(main).then(function(canvas) {
+        //         var dataURL = canvas.toDataURL("image/png");
+        //         var shareData = {
+        //             files: [dataURL]
+        //         }
+        //         navigator.share(shareData);
+        //     });
+        // }
 
-                var confetti = document.createElement("div");
-                confetti.classList.add("confetti");
-                confetti.style.position = "absolute";
-                confetti.style.left = x + "px";
-                confetti.style.top = y + "px";
-                confetti.style.width = size + "px";
-                confetti.style.height = size + "px";
-                confetti.style.borderRadius = "50%";
-                confetti.style.opacity = Math.random();
-                document.body.appendChild(confetti);
-                setTimeout(function() {
-                    confetti.remove();
-                }, 2000);
-            }, 100);
-      
-      </script>
+        // // event listener for button with id "share" that runs shareScreenshot()
+        // document.querySelector("#share").addEventListener("click", function() {
+        //     shareScreenshot();
+        // });
+
+        // generate confetti
+        setInterval(function () {
+            var x = Math.floor(Math.random() * window.innerWidth);
+            var y = Math.floor(Math.random() * window.innerHeight);
+            var size = Math.floor(Math.random() * 10);
+
+            var confetti = document.createElement("div");
+            confetti.classList.add("confetti");
+            confetti.style.position = "absolute";
+            confetti.style.left = x + "px";
+            confetti.style.top = y + "px";
+            confetti.style.width = size + "px";
+            confetti.style.height = size + "px";
+            confetti.style.borderRadius = "50%";
+            confetti.style.opacity = Math.random();
+            document.body.appendChild(confetti);
+            setTimeout(function () {
+                confetti.remove();
+            }, 2000);
+        }, 100);
+
+    </script>
 </body>
+
 </html>

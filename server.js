@@ -1,17 +1,16 @@
 require("dotenv").config();
 const express = require('express');
 const bodyParser = require('body-parser');
-const { Configuration, OpenAIApi } = require("openai");
+const OpenAI = require("openai");
 const path = require('path');
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-const configuration = new Configuration({
+const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-const openai = new OpenAIApi(configuration);
 
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
@@ -27,17 +26,17 @@ app.get('/', (req, res) => {
 app.get('/acronyms/:nameToExpand', async (req, res) => {
   const nameToExpand = req.params.nameToExpand;
   try {
-    const response = await openai.createCompletion({
-      model: "text-davinci-003",
-      prompt: `Generate 10 light-hearted and funny acronyms for the word ${nameToExpand}. Make sure they are not mean-spirited or offensive. Return results as a comma separated list`,
+    const response = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: [{
+        role: "user",
+        content: `Generate 10 light-hearted and funny acronyms for the word ${nameToExpand}. Make sure they are not mean-spirited or offensive. Return results as a comma separated list`
+      }],
       temperature: 0.7,
       max_tokens: 256,
-      top_p: 1,
-      frequency_penalty: 0,
-      presence_penalty: 0,
     });
 
-    const acros = response.data.choices[0].text
+    const acros = response.choices[0].message.content
       .replace(/\.|\r|\n/gm, '')
       .split(', ')
       .map(x => x.trim());
@@ -51,17 +50,17 @@ app.get('/acronyms/:nameToExpand', async (req, res) => {
 app.get('/quickstart/:prompt', async (req, res) => {
   const prompt = req.params.prompt;
   try {
-    const response = await openai.createCompletion({
-      model: "text-davinci-003",
-      prompt: `Write a title and a short response for the prompt ${prompt}. Format the result as HTML.`,
+    const response = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: [{
+        role: "user",
+        content: `Write a title and a short response for the prompt ${prompt}. Format the result as HTML.`
+      }],
       temperature: 0.7,
       max_tokens: 256,
-      top_p: 1,
-      frequency_penalty: 0,
-      presence_penalty: 0,
     });
 
-    const result = response.data.choices[0].text;
+    const result = response.choices[0].message.content;
     res.json(result);
   } catch (error) {
     console.error(error);

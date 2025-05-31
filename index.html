@@ -155,7 +155,7 @@
         }
 
         button:hover{
-            background-color: var(--BackgroundColor)
+            background-color: var(--BackgroundColor);
             color: #eee;
             border: 2px var(--AccentColor) solid;
         }
@@ -339,19 +339,31 @@
         
         // function to fetch acronyms from openai api
         async function fetchAcronyms(name) {
-        const response = await fetch('https://acronym.gyanl.com/acronyms/' + name);
-        const data = await response.json();
-        
-        // change loading div to display none
-        document.querySelector("#loading").style.display = "none";
-        // convert data to array
-        // append contents of 'data' array to 'expand' array without overwriting previous contents
-        expand = expand.concat(data);
-        expand = reverseArray(expand);
-        // write expand to local storage
-        // localStorage.setItem("expand", JSON.stringify(expand));
-        console.log(expand);
-        updatePageWithNewAcronym();
+            try {
+                const response = await fetch('https://acronym.gyanl.com/acronyms/' + name);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                
+                // change loading div to display none
+                document.querySelector("#loading").style.display = "none";
+                
+                if (!Array.isArray(data) || data.length === 0) {
+                    throw new Error('Invalid response format or empty results');
+                }
+                
+                // convert data to array
+                expand = expand.concat(data);
+                expand = reverseArray(expand);
+                console.log(expand);
+                updatePageWithNewAcronym();
+            } catch (error) {
+                console.error('Error fetching acronyms:', error);
+                document.querySelector("#loading").style.display = "none";
+                document.querySelector("#main").innerHTML = "Oops! Something went wrong. Please try again.";
+                document.querySelector("#error").innerHTML = "Error: " + error.message;
+            }
         }
 
 
@@ -498,17 +510,28 @@
 
             // event listener for button with id "generate"
             document.querySelector("#generate").addEventListener("click", function() {
-                var input = document.querySelector("#name-textbox").value;
-                if (input == "") {
-                    document.querySelector("#error").innerHTML = "You gotta put in a name, dude.";
-                } else {
-                    // navigate to new page with input passed in the url
-                    window.location.href = "?name=" + input;
+                var input = document.querySelector("#name-textbox").value.trim();
+                if (input === "") {
+                    document.querySelector("#error").innerHTML = "Please enter a name.";
+                    return;
                 }
+                if (input.length > 20) {
+                    document.querySelector("#error").innerHTML = "Name is too long. Please keep it under 20 characters.";
+                    return;
+                }
+                if (!/^[A-Za-z0-9\s]+$/.test(input)) {
+                    document.querySelector("#error").innerHTML = "Please use only letters, numbers, and spaces.";
+                    return;
+                }
+                // navigate to new page with input passed in the url
+                window.location.href = "?name=" + encodeURIComponent(input);
             });
 
             // Auto-uppercase for input field with id "name-textbox"
-            document.querySelector("#name-textbox").addEventListener("keyup", function() {
+            document.querySelector("#name-textbox").addEventListener("keyup", function(e) {
+                if (e.key === "Enter") {
+                    document.querySelector("#generate").click();
+                }
                 document.querySelector("#name-textbox").value = document.querySelector("#name-textbox").value.toUpperCase();
             });
 

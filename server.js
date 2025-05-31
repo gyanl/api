@@ -1,7 +1,7 @@
 require("dotenv").config();
 const express = require('express');
 const bodyParser = require('body-parser');
-const { OpenAI } = require("openai");
+const OpenAI = require("openai");
 const path = require('path');
 
 const app = express();
@@ -14,6 +14,7 @@ if (!process.env.OPENAI_API_KEY) {
   process.exit(1);
 }
 
+// Initialize OpenAI
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
@@ -84,11 +85,11 @@ module.exports = async (req, res) => {
         messages: [
           {
             role: "system",
-            content: "You are a helpful assistant that generates funny and light-hearted acronyms."
+            content: "You are a helpful assistant that generates funny and light-hearted acronyms for a given word that will be displayed on a website. You return results as a comma separated list with no other text, so that the website can separate them and display them as a list."
           },
           {
             role: "user",
-            content: `Generate 10 light-hearted and funny acronyms for the word ${nameToExpand}. Make sure they are not mean-spirited or offensive. Return results as a comma separated list`
+            content: `Generate 10 light-hearted and funny acronyms for the word ${nameToExpand}. Make sure they are not mean-spirited or offensive.`
           }
         ],
         temperature: 0.7,

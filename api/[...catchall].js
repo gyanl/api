@@ -164,10 +164,4 @@ export default async function handler(req, res) {
       endpoint: userQuery || "unknown"
     });
   }
-}
-
-export const config = {
-  runtime: 'nodejs18.x',
-  memory: 1024, // 1GB of memory
-  maxDuration: 10 // Maximum execution time in seconds
-}; 
+} 

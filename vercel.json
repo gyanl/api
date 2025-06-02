@@ -1,7 +1,9 @@
 {
   "version": 2,
+  "buildCommand": null,
   "functions": {
     "api/**/*.js": {
+      "runtime": "@vercel/node@3.0.0",
       "memory": 1024,
       "maxDuration": 10
     }

@@ -60,25 +60,48 @@ export default async function handler(request) {
     // Remove any trailing slashes
     userQuery = userQuery.replace(/\/$/, '') || "default";
     
+    // Parse fields parameter for response customization
+    const searchParams = url.searchParams;
+    const fields = searchParams.get('fields');
+    
     console.log('Processing endpoint:', userQuery);
-    console.log('Full URL:', request.url);
-    console.log('Pathname:', url.pathname);
+    if (fields) {
+      console.log('Requested fields:', fields);
+    }
+
+    // Build system prompt
+    let systemPrompt = `You are Gyan Lakhwani's playful API assistant that lives at api.gyanl.com. This request is for the api.gyanl.com/${userQuery} endpoint.`;
+
+    // Add field-specific instructions
+    if (fields) {
+      const fieldList = fields.split(',').map(f => f.trim());
+      systemPrompt += ` The response must include these specific fields: ${fieldList.join(', ')}.`;
+    }
+
+    systemPrompt += ` You must respond with ONLY valid JSON - no extra text, no markdown formatting, no explanations. Ensure all JSON strings are properly escaped.`;
+
+    // Build user prompt
+    let userPrompt = `Create a JSON response for the endpoint: ${userQuery}`;
+    
+    if (fields) {
+      userPrompt += ` with the following fields: ${fields}`;
+    }
 
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini", // Cost-effective for creative responses
       messages: [
         {
           role: "system",
-          content: `You are Gyan Lakhwani's playful API assistant that lives at api.gyanl.com. This request is for the api.gyanl.com/${userQuery} endpoint. You must respond with ONLY valid JSON - no extra text, no markdown formatting, no explanations. Create a creative JSON response that fits the endpoint theme. Keep the response simple and ensure all JSON strings are properly escaped. Example format: {"message": "Hello world", "status": "success"}`,
+          content: systemPrompt,
         },
         {
           role: "user",
-          content: `Create a JSON response for the endpoint: ${userQuery}`,
+          content: userPrompt,
         },
       ],
-      temperature: 0.8, // For creative yet somewhat consistent output
-      max_tokens: 250, // Keep responses concise
-      response_format: { type: "json_object" }, // Crucial for ensuring JSON output
+      temperature: 0.8,
+      max_tokens: 250,
+      response_format: { type: "json_object" },
     });
 
     const aiResponseString = completion.choices[0]?.message?.content;
@@ -131,6 +154,26 @@ export default async function handler(request) {
         endpoint: userQuery,
         fallback_reason: "AI returned invalid JSON"
       };
+
+      // Apply field filtering to fallback if specified
+      if (fields) {
+        const fieldList = fields.split(',').map(f => f.trim());
+        const filteredResponse = {};
+        fieldList.forEach(field => {
+          if (fallbackResponse[field] !== undefined) {
+            filteredResponse[field] = fallbackResponse[field];
+          } else {
+            filteredResponse[field] = `Generated value for ${field}`;
+          }
+        });
+        return new Response(JSON.stringify(filteredResponse), {
+          status: 200,
+          headers: { 
+            'Content-Type': 'application/json',
+            ...corsHeaders 
+          },
+        });
+      }
 
       return new Response(JSON.stringify(fallbackResponse), {
         status: 200, // Return 200 with fallback rather than error

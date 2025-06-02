@@ -64,11 +64,40 @@ GET /api/[anything]
 ```
 Any other endpoint will trigger an AI-powered creative response.
 
-**Example:** `/api/pizza/toppings`
+#### Optional Query Parameter
+
+**fields** - Specify which fields you want in the response:
+```
+GET /api/weather/today?fields=temp,condition
+```
 ```json
 {
-  "toppings": ["creativity", "inspiration", "a sprinkle of magic"],
-  "recommendation": "Best served with curiosity"
+  "temp": "perfect",
+  "condition": "sunny"
+}
+```
+
+**Example:** Basic endpoint without fields parameter:
+```
+GET /api/user/profile
+```
+```json
+{
+  "message": "Welcome to the user profile endpoint!",
+  "status": "active",
+  "personality": "mysterious and intriguing"
+}
+```
+
+**Example:** With specific fields:
+```
+GET /api/user/profile?fields=name,email,role
+```
+```json
+{
+  "name": "Gyan Lakhwani",
+  "email": "hello@gyanl.com",
+  "role": "Creative Developer"
 }
 ```
 
@@ -104,7 +133,7 @@ npm run deploy
 
 ## Architecture
 
-This project uses Vercel's serverless functions with the following structure:
+This project uses Vercel's Edge Runtime serverless functions with the following structure:
 
 ```
 api/
@@ -113,18 +142,18 @@ api/
 ├── quickstart/
 │   └── [prompt].js        # HTML content generation
 ├── fact.js                # Static facts endpoint
+├── test.js                # API structure test endpoint
 └── [...catchall].js       # AI-powered catchall
 ```
 
 ## Best Practices Implemented
 
-1. **Serverless Architecture**: Each endpoint is a separate function for better performance and scaling
+1. **Edge Runtime**: Ultra-fast serverless functions with minimal cold starts
 2. **Proper CORS**: All endpoints include proper CORS headers
 3. **Input Validation**: Comprehensive validation for user inputs
 4. **Error Handling**: Graceful error handling with appropriate HTTP status codes
-5. **Cost Optimization**: Using gpt-4o-mini for cost-effective AI responses
-6. **ES Modules**: Modern JavaScript module system
-7. **Environment Validation**: Proper checking of required environment variables
+5. **Cost Optimization**: Using gpt-4o-mini with optimized token limits
+6. **OpenAI Client Reuse**: Initialized outside handlers for better performance
 
 ## License
 

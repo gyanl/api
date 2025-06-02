@@ -75,8 +75,8 @@ export default async function handler(req, res) {
           content: `Create a JSON response for the endpoint: ${userQuery}`
         }
       ],
-      temperature: 0.7, // Reduced temperature for more consistent JSON output
-      max_tokens: 120, // Reduced to avoid truncation issues
+      temperature: 0.8, // Reduced temperature for more consistent JSON output
+      max_tokens: 250,
       response_format: { type: "json_object" }
     });
 

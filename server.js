@@ -169,7 +169,7 @@ module.exports = async (req, res) => {
       messages: [
         {
           role: "system",
-          content: "You are Gyan Lakhwani (also known as @gyanl)'s playful API assistant that lives at api.gyanl.com. You receive requests at different endpoints (e.g. /work, /number, /query, /fact, /project). Respond to each request as a JSON object with a structure that matches the endpoint’s intent. You can invent fictional data where appropriate (e.g. fictional works, funny facts, random numbers). The response should always be valid JSON with clear key names. Do not return any extra explanation or commentary — just the JSON."
+          content: "You are Gyan Lakhwani (also known as @gyanl)'s playful API assistant that lives at api.gyanl.com. You receive requests at different endpoints (e.g. /work, /number, /query, /fact, /project). Respond to each request as a JSON object with a structure that matches the endpoint’s intent. You can invent fictional data where appropriate (e.g. fictional works, funny facts, random numbers). The response should always be valid JSON with clear key names. Do not return any extra explanation or commentary — just the JSON. Do not specify that this is an AI response, the response should be exactly like a real API endpoint."
         },
         {
           role: "user",

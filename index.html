@@ -5,610 +5,122 @@
 <head>
     <meta property="og:image" content="https://gyanl.com/aicronym/aicronym.png" />
     <meta charset="UTF-8" />
-    <title>Get Your Acronym Now</title>
-
-    <!-- import Favo Sans Modern from Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@100&family=Quicksand:wght@500&display=swap"
-        rel="stylesheet">
+    <title>AICronym API Documentation</title>
     <style>
-        /* 3 Css variable for BGcolor, textcolor, accentcolor */
-        :root {
-            --AccentColor: #hsl(0, 0%, 100%);
-            --BackgroundColor: #hsl(0, 0%, 0%);
-            --TextColor: hsl(0, 0%, 0%);
-        }
-
         body {
-            background-color: var(--BackgroundColor);
-            color: #fff;
-            font-family: "Quicksand", Helvetica, Arial, sans-serif;
-            font-weight: 500;
-            font-size: 1.5em;
-            line-height: 1.5;
-            margin: 0;
-            padding: 10%;
-            text-align: center;
-            transition: 1.5s;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
         }
-
-        #title {
-            position: absolute;
-            top: 100px;
-            left: 0;
-            right: 0;
-            font-size: 1em;
-            font-weight: 700;
-            margin: 20 auto 20px auto;
-            padding: 0;
-            text-align: center;
-            color: var(--AccentColor);
-            transform: .5s;
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
         }
-
-        #main {
-            font-family: "Archivo", Helvetica, Arial, sans-serif;
-            font-size: 2em;
-            font-weight: 100;
-            line-height: 1.1em;
-            margin: 0;
-            padding: 0;
-            text-align: center;
-            color: var(--BackgroundColor);
-            position: absolute;
-            top: 40%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            /* animation: glow 2s ease-in-out infinite alternate; */
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
         }
-
-        .disclaimer {
-            padding-top: 20px;
-            font-size: medium;
-            opacity: .5;
-            color: var(--TextColor);
+        code {
+            background: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
         }
-
-        /* define glow animation using box shadow */
-        @keyframes glow {
-            from {
-                text-shadow: 0 0 10px var(--AccentColor), 0 0 20px var(--AccentColor), 0 0 40px var(--AccentColor);
-            }
-
-            to {
-                text-shadow: 0 0 20px var(--AccentColor), 0 0 40px var(--AccentColor), 0 0 20px var(--AccentColor);
-            }
-        }
-
-        .lds-ripple {
-            margin-top: 20px;
-            display: inline-block;
-            position: relative;
-            width: 80px;
-            height: 80px;
-        }
-
-        .lds-ripple div {
-            position: absolute;
-            border: 4px solid var(--TextColor);
-            opacity: 1;
-            border-radius: 50%;
-            animation: lds-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
-        }
-
-        .lds-ripple div:nth-child(2) {
-            animation-delay: -0.5s;
-        }
-
-        @keyframes lds-ripple {
-            0% {
-                top: 36px;
-                left: 36px;
-                width: 0;
-                height: 0;
-                opacity: 0;
-            }
-
-            4.9% {
-                top: 36px;
-                left: 36px;
-                width: 0;
-                height: 0;
-                opacity: 0;
-            }
-
-            5% {
-                top: 36px;
-                left: 36px;
-                width: 0;
-                height: 0;
-                opacity: 1;
-            }
-
-            100% {
-                top: 0px;
-                left: 0px;
-                width: 72px;
-                height: 72px;
-                opacity: 0;
-            }
-        }
-
-
-        input {
-            background: rgba(255, 255, 255, .08);
-            border: none;
-            font-family: "Quicksand", Helvetica, Arial, sans-serif;
-            font-weight: 500;
-            font-size: 1.2em;
-            padding: 16px 28px;
+        pre {
+            background: #f8f9fa;
+            padding: 15px;
             border-radius: 8px;
-            color: var(--TextColor);
-            /* box shadow of accentcolor */
-            box-shadow: 0 0 2px 2px var(--AccentColor);
-            text-align: center;
+            overflow-x: auto;
         }
-
-        button {
-            font-family: "Quicksand", Helvetica, Arial, sans-serif;
-            font-weight: 500;
-            background-color: var(--AccentColor);
-            border: none;
-            color: #fff;
-            font-size: 1em;
-            margin: 28px 0 0 0;
-            padding: 12px 24px;
-            border-radius: 12px;
-            text-align: center;
-            transition: .1s;
-            border: 2px var(--AccentColor) solid;
+        .endpoint {
+            background: #f1f8ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
         }
-
-        button:hover {
-            background-color: var(--BackgroundColor);
-            color: #eee;
-            border: 2px var(--AccentColor) solid;
-        }
-
-        button:active {
-            background-color: #000;
-            color: #ddd;
-            transform: translateY(4px);
-            transition: .2s;
-        }
-
-        .button-container {
-            position: absolute;
-            bottom: 10%;
-            left: 35%;
-            width: 30vw;
-            margin: auto;
-        }
-
-        #error {
-            font-size: .8em;
-            width: auto;
-            text: rgba(255, 255, 255, .8);
-            /* background: rgba(0, 0, 0, .8); */
-        }
-
-        .confetti {
-            background-color: var(--AccentColor);
-            z-index: -1;
-        }
-
-
-        /* class to animate from blurred element to unblurred element */
-        .blur-in {
-            -webkit-animation: blur-in 1s forwards;
-            -moz-animation: blur-in 1s forwards;
-            -o-animation: blur-in 1s forwards;
-            animation: blur-in 1s forwards;
-        }
-
-        .bounce-in {
-            -webkit-animation: bounce-in 1s ease-in-out;
-            -moz-animation: bounce-in 1s ease-in-out;
-            -o-animation: bounce-in 1s ease-in-out;
-            animation: bounce-in 1s ease-in-out;
-        }
-
-        /* blur-in definition for all browsers*/
-        @-webkit-keyframes blur-in {
-            0% {
-                -webkit-filter: blur(10px);
-                filter: blur(10px);
-                opacity: 0;
-                transform: translateY(10%);
-                color: var(--BackgroundColor);
-                text-shadow: 0 0 0px var(--TextColor), 0 0 0px var(--TextColor), 0 0 0px var(--TextColor);
-            }
-
-            100% {
-                -webkit-filter: blur(0);
-                filter: blur(0);
-                opacity: 1;
-                transform: translateY(0px);
-                color: var(--TextColor);
-                text-shadow: 0 0 10px var(--AccentColor), 0 0 20px var(--AccentColor), 0 0 40px var(--AccentColor);
-
-            }
-        }
-
-        @-webkit-keyframes bounce-in {
-            0% {
-                transform: translateY(10%);
-            }
-
-            100% {
-                transform: translateY(0px);
-            }
-        }
-
-        .ask {
-            display: none;
-        }
-
-        .generate {
-            display: none;
-        }
-
-
-
-
-        /* mobile only css */
-        @media only screen and (max-width: 600px) {
-
-            body {
-                padding: 25% 5% 0 5%;
-            }
-
-            #title {
-                top: 40px;
-            }
-
-            #main {
-                position: relative;
-                font-size: 2.2em;
-                top: auto;
-                left: auto;
-                transform: none;
-            }
-
-            button {
-                font-size: .8em;
-                margin: 28px 0 0 0;
-                padding: 12px 24px;
-                border-radius: 12px;
-            }
-
-            .button-container {
-                width: 80vw;
-                left: 10vw;
-                bottom: 3%;
-            }
-
-            input {
-                font-size: .9em;
-                padding: 16px 18px 16px 18px;
-                width: 80vw;
-            }
+        .note {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
         }
     </style>
 </head>
-
 <body>
-    <div class="generate">
-        <div id="title">What is <span id="name-insert">Gyan</span>?</div>
-        <div id="loading">
+    <h1>AICronym API Documentation</h1>
+    
+    <p>Base URL: <code>https://api.gyanl.com</code></p>
 
-            <div class="lds-ripple">
-                <div></div>
-                <div></div>
-            </div>
-            <p>Thinking...</p>
-        </div>
-        <div id="main">
+    <h2>Endpoints</h2>
 
-        </div>
-        <div class="button-container">
-            <button id="regenerate">Another One!</button>
-            <!-- <button id="share">Share</button>             -->
-            <button id="tweet">Tweet</button>
-            <div class="disclaimer">This is unstable software. 6 letters or shorter give best results.</div>
-        </div>
+    <div class="endpoint">
+        <h3>Generate Acronym Expansions</h3>
+        <p>Generates creative acronym expansions for a given prompt.</p>
 
+        <p><strong>Endpoint:</strong> <code>GET /acronyms/:prompt</code></p>
+
+        <h4>Parameters:</h4>
+        <ul>
+            <li><code>prompt</code> (path parameter): The acronym to generate expansions for</li>
+        </ul>
+
+        <h4>Response:</h4>
+        <ul>
+            <li>Returns a JSON array of strings, where each string is an HTML-formatted expansion</li>
+            <li>Each expansion is a complete sentence starting with a letter from the acronym</li>
+        </ul>
+
+        <h4>Example Request:</h4>
+        <pre><code>curl https://api.gyanl.com/acronyms/API</code></pre>
+
+        <h4>Example Response:</h4>
+        <pre><code>[
+  "Amazing Programming Interface",
+  "Always Providing Innovation",
+  "Advanced Problem Integration",
+  "Automated Process Intelligence",
+  "Agile Project Implementation"
+]</code></pre>
+
+        <h4>Error Response:</h4>
+        <pre><code>{
+  "error": "An error occurred while processing your request",
+  "details": "Error message details"
+}</code></pre>
     </div>
 
-    <div class="ask">
-        <div id="title">GYAN: Get Your Acronym Now</div>
-        <p>Type something to start generating your own acronym</p>
-        <input id="name-textbox" type="text" placeholder="What's your name?">
-        <p></p>
-        <div class="button-container">
-            <button id="generate">Generate</button>
-            <div class="disclaimer">This is unstable software. 6 letters or shorter give best results.</div>
-        </div>
-        <p id="error"></p>
+    <h2>Rate Limits</h2>
+    <ul>
+        <li>Standard rate limits apply</li>
+        <li>Please be mindful of API usage</li>
+    </ul>
+
+    <h2>Authentication</h2>
+    <ul>
+        <li>No authentication required</li>
+        <li>Public API endpoint</li>
+    </ul>
+
+    <h2>CORS</h2>
+    <ul>
+        <li>CORS is enabled</li>
+        <li>All origins are allowed (<code>Access-Control-Allow-Origin: *</code>)</li>
+    </ul>
+
+    <div class="note">
+        <h2>Notes</h2>
+        <ul>
+            <li>The API uses OpenAI's GPT-3.5 Turbo Instruct model</li>
+            <li>Each request generates 10 different creative expansions</li>
+            <li>Responses are formatted in HTML for easy integration</li>
+        </ul>
     </div>
-    <script>
-
-        // on page load, check if there is a name in the url and return it. Else return "0"
-        var name = window.location.href.split("?name=")[1] || "0";
-
-        // read expand from local storage
-        var expand = [];
-        name = name.toUpperCase();
-
-        // set name-insert to name
-        document.querySelector("#name-insert").innerHTML = name;
-
-
-        // function parseJsonArray(jsonString) {
-        //     try {
-        //         const parsedArray = JSON.parse(jsonString);
-        //         return parsedArray;
-        //     } catch (error) {
-        //         console.error('Error parsing JSON:', error);
-        //         return [];
-        //     }
-        //     }
-
-        // function to fetch acronyms from openai api
-        async function fetchAcronyms(name) {
-            try {
-                const response = await fetch('https://acronym.gyanl.com/acronyms/' + name);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const data = await response.json();
-
-                // change loading div to display none
-                document.querySelector("#loading").style.display = "none";
-
-                if (!data.acronyms || !Array.isArray(data.acronyms) || data.acronyms.length === 0) {
-                    throw new Error('Invalid response format or empty results');
-                }
-
-                // Update metadata if available
-                if (data.metadata) {
-                    document.querySelector("#title").innerHTML = `What is <span id="name-insert">${data.metadata.word}</span>?`;
-                }
-
-                // convert data to array
-                expand = expand.concat(data.acronyms);
-                expand = reverseArray(expand);
-                console.log(expand);
-                updatePageWithNewAcronym();
-            } catch (error) {
-                console.error('Error fetching acronyms:', error);
-                document.querySelector("#loading").style.display = "none";
-                document.querySelector("#main").innerHTML = "Oops! Something went wrong. Please try again.";
-                document.querySelector("#error").innerHTML = "Error: " + error.message;
-            }
-        }
-
-
-        // fn viewdecider makes "ask" class visible if there is no name in the url, else makes "answer" class visible
-        function viewDecider(name) {
-            if (name == "0") {
-                document.querySelector(".ask").style.display = "block";
-            } else {
-                document.querySelector(".generate").style.display = "block";
-                fetchAcronyms(name);
-                // apply blur-in animation to every character in the main div
-                var main = document.querySelector("#main");
-                var mainText = main.innerHTML;
-                main.innerHTML = "";
-                for (var i = 0; i < mainText.length; i++) {
-                    var span = document.createElement("span");
-                    span.innerHTML = mainText[i];
-                    span.classList.add("blur-in");
-                    main.appendChild(span);
-                }
-            }
-        }
-
-        // run function viewdecider on page load
-        viewDecider(name);
-
-
-
-        var lastpicked = 0;
-        // function to take an array and return a random string
-        //   function randomString(array) {
-        //       var randomIndex = Math.floor(Math.random() * array.length);
-        //       lastpicked = randomIndex;
-        //       return array[randomIndex];
-        //   }
-
-
-        // reverse order of objects in array
-        function reverseArray(array) {
-            var newArray = [];
-            for (var i = array.length - 1; i >= 0; i--) {
-                newArray.push(array[i]);
-            }
-            return newArray;
-        }
-
-        // fn to get an array and return a random string that is not the same as the last one. Use recursion to ensure that the same string is not returned twice in a row.
-        function randomString(array) {
-            var randomIndex = Math.floor(Math.random() * array.length);
-            if (randomIndex == lastpicked) {
-                return randomString(array);
-            } else {
-                lastpicked = randomIndex;
-                return array[randomIndex];
-            }
-        }
-
-
-        // fn to get next string at nth position in array and increment n by 1
-        function nextString(array) {
-            var nextIndex = lastpicked + 1;
-            if (nextIndex >= array.length) {
-                nextIndex = 0;
-                fetchAcronyms(name);
-                document.querySelector("#loading").style.display = "inline-block";
-            }
-            lastpicked = nextIndex;
-            return array[nextIndex];
-        }
-
-        // function to insert string into div with id "main"
-        function insertString(string) {
-            var main = document.getElementById("main");
-            // split string into array of words
-            var splitString = string.split(" ");
-            main.innerHTML = string;
-        }
-
-        // function to every word of a string into it's own span with an increasing animation delay
-        function animateString(string) {
-            var splitString = string.split(" ");
-            var newString = "";
-            for (var i = 0; i < splitString.length; i++) {
-                newString += "<span class='blur-in' style='animation-delay: " + (i * 0.12) + "s'>" + splitString[i] + "</span><br>";
-            }
-            return newString;
-        }
-
-
-        // function to generate a random HSL color
-        function generateColors() {
-            var hue = Math.floor(Math.random() * 360);
-
-            var saturation = 70;
-            var lightness = 45;
-            genAccent = "hsl(" + (hue - 20) + ", " + saturation + "%, " + lightness + "%)";
-            document.documentElement.style.setProperty('--AccentColor', genAccent);
-
-            var saturation = 90;
-            var lightness = 5;
-            genBackground = "hsl(" + (hue + 10) + ", " + saturation + "%, " + lightness + "%)";
-            document.documentElement.style.setProperty('--BackgroundColor', genBackground);
-
-            var saturation = 70;
-            var lightness = 80;
-            genText = "hsl(" + hue + ", " + saturation + "%, " + lightness + "%)";
-            document.documentElement.style.setProperty('--TextColor', genText);
-        }
-
-        // fn to make title bounce in
-        function titleBounce() {
-            var title = document.getElementById("title");
-            title.classList.add("bounce-in");
-        }
-
-        // fn to remove bounce-in class from title
-        function removeBounce() {
-            var title = document.getElementById("title");
-            title.classList.remove("bounce-in");
-        }
-
-        generateColors();
-        titleBounce();
-        //   insertString(animateString(randomString(expand)));
-
-        function updatePageWithNewAcronym() {
-            generateColors();
-            insertString(animateString(nextString(expand)));
-            removeBounce();
-            void document.getElementById("title").offsetWidth; // trigger reflow
-            titleBounce();
-        }
-
-        // on clicking button with id "regenerate", runs updatePageWithNewAcronym()
-        document.querySelector("#regenerate").addEventListener("click", function () {
-            updatePageWithNewAcronym();
-        });
-
-        // event listener for form that runs regenerate function
-        // document.querySelector("form").addEventListener("submit", function(e) {
-        //     regenerate();
-        // });
-
-
-        // event listener for button with id "generate"
-        document.querySelector("#generate").addEventListener("click", function () {
-            var input = document.querySelector("#name-textbox").value.trim();
-            if (input === "") {
-                document.querySelector("#error").innerHTML = "Please enter a name.";
-                return;
-            }
-            if (input.length > 20) {
-                document.querySelector("#error").innerHTML = "Name is too long. Please keep it under 20 characters.";
-                return;
-            }
-            if (!/^[A-Za-z0-9\s]+$/.test(input)) {
-                document.querySelector("#error").innerHTML = "Please use only letters, numbers, and spaces.";
-                return;
-            }
-            // navigate to new page with input passed in the url
-            window.location.href = "?name=" + encodeURIComponent(input);
-        });
-
-        // Auto-uppercase for input field with id "name-textbox"
-        document.querySelector("#name-textbox").addEventListener("keyup", function (e) {
-            if (e.key === "Enter") {
-                document.querySelector("#generate").click();
-            }
-            document.querySelector("#name-textbox").value = document.querySelector("#name-textbox").value.toUpperCase();
-        });
-
-        // Take name and expansion and put into tweet
-        function shareTweet() {
-            var tweet = "https://twitter.com/intent/tweet?text=" +
-                encodeURIComponent(`I just found out that an AI model thinks ${name} stands for ${expand[lastpicked]}. Find out what AI thinks your name really stands for at gyanl.com/aicronym`);
-            window.open(tweet, "_blank");
-        }
-
-        // event listener for button with id "twitter" that runs shareTweet()
-        document.querySelector("#tweet").addEventListener("click", function () {
-            shareTweet();
-        });
-
-        // // take a screenshot of main div and share using system share dialog
-        // function shareScreenshot() {
-        //     var main = document.querySelector("#main");
-        //     html2canvas(main).then(function(canvas) {
-        //         var dataURL = canvas.toDataURL("image/png");
-        //         var shareData = {
-        //             files: [dataURL]
-        //         }
-        //         navigator.share(shareData);
-        //     });
-        // }
-
-        // // event listener for button with id "share" that runs shareScreenshot()
-        // document.querySelector("#share").addEventListener("click", function() {
-        //     shareScreenshot();
-        // });
-
-        // generate confetti
-        setInterval(function () {
-            var x = Math.floor(Math.random() * window.innerWidth);
-            var y = Math.floor(Math.random() * window.innerHeight);
-            var size = Math.floor(Math.random() * 10);
-
-            var confetti = document.createElement("div");
-            confetti.classList.add("confetti");
-            confetti.style.position = "absolute";
-            confetti.style.left = x + "px";
-            confetti.style.top = y + "px";
-            confetti.style.width = size + "px";
-            confetti.style.height = size + "px";
-            confetti.style.borderRadius = "50%";
-            confetti.style.opacity = Math.random();
-            document.body.appendChild(confetti);
-            setTimeout(function () {
-                confetti.remove();
-            }, 2000);
-        }, 100);
-
-    </script>
 </body>
-
 </html>
+
+
+    

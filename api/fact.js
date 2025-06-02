@@ -8,35 +8,66 @@ const facts = [
   // Add more facts here
 ];
 
-export default function handler(req, res) {
-  // Set CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+export default function handler(request) {
+  const corsHeaders = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept',
+  };
 
-  // Handle OPTIONS request for CORS
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
+  // Handle preflight OPTIONS request
+  if (request.method === 'OPTIONS') {
+    return new Response(null, {
+      status: 200,
+      headers: corsHeaders,
+    });
   }
 
   // Only allow GET requests
-  if (req.method !== 'GET') {
-    res.status(405).json({ error: 'Method not allowed' });
-    return;
+  if (request.method !== 'GET') {
+    return new Response(
+      JSON.stringify({ error: 'Method not allowed' }),
+      {
+        status: 405,
+        headers: { 
+          'Content-Type': 'application/json',
+          ...corsHeaders 
+        },
+      }
+    );
   }
 
   try {
     const randomFact = facts[Math.floor(Math.random() * facts.length)];
-    res.json({
+    
+    return new Response(JSON.stringify({
       fact: randomFact,
       total_facts: facts.length
+    }), {
+      status: 200,
+      headers: { 
+        'Content-Type': 'application/json',
+        ...corsHeaders 
+      },
     });
   } catch (error) {
     console.error('Error in fact API:', error);
-    res.status(500).json({
-      error: 'Internal Server Error',
-      message: 'Error retrieving fact'
-    });
+    return new Response(
+      JSON.stringify({
+        error: 'Internal Server Error',
+        message: 'Error retrieving fact'
+      }),
+      {
+        status: 500,
+        headers: { 
+          'Content-Type': 'application/json',
+          ...corsHeaders 
+        },
+      }
+    );
   }
-} 
+}
+
+export const config = {
+  runtime: "edge",
+}; 

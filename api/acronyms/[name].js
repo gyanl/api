@@ -1,5 +1,10 @@
 import OpenAI from "openai";
 
+// Initialize OpenAI client outside handler for reuse
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
 // Input validation helper
 const validateAcronymInput = (nameToExpand) => {
   if (!nameToExpand) {
@@ -14,46 +19,84 @@ const validateAcronymInput = (nameToExpand) => {
   return null;
 };
 
-export default async function handler(req, res) {
-  // Set CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+export default async function handler(request) {
+  const corsHeaders = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept',
+  };
 
-  // Handle OPTIONS request for CORS
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
+  // Handle preflight OPTIONS request
+  if (request.method === 'OPTIONS') {
+    return new Response(null, {
+      status: 200,
+      headers: corsHeaders,
+    });
   }
 
   // Only allow GET requests
-  if (req.method !== 'GET') {
-    res.status(405).json({ error: 'Method not allowed' });
-    return;
+  if (request.method !== 'GET') {
+    return new Response(
+      JSON.stringify({ error: 'Method not allowed' }),
+      {
+        status: 405,
+        headers: { 
+          'Content-Type': 'application/json',
+          ...corsHeaders 
+        },
+      }
+    );
   }
 
   try {
     // Validate OpenAI API key
     if (!process.env.OPENAI_API_KEY) {
       console.error('OPENAI_API_KEY is not set in environment variables');
-      res.status(500).json({ error: 'Server configuration error' });
-      return;
+      return new Response(
+        JSON.stringify({ error: 'Server configuration error' }),
+        {
+          status: 500,
+          headers: { 
+            'Content-Type': 'application/json',
+            ...corsHeaders 
+          },
+        }
+      );
     }
 
-    const { name } = req.query;
+    const url = new URL(request.url);
+    const pathSegments = url.pathname.split('/').filter(Boolean);
+    const name = pathSegments[pathSegments.length - 1]; // Get the last segment as the name
+
+    if (!name) {
+      return new Response(
+        JSON.stringify({ error: 'Name parameter is required' }),
+        {
+          status: 400,
+          headers: { 
+            'Content-Type': 'application/json',
+            ...corsHeaders 
+          },
+        }
+      );
+    }
+
     const nameToExpand = decodeURIComponent(name);
 
     // Validate input
     const validationError = validateAcronymInput(nameToExpand);
     if (validationError) {
-      res.status(400).json(validationError);
-      return;
+      return new Response(
+        JSON.stringify(validationError),
+        {
+          status: 400,
+          headers: { 
+            'Content-Type': 'application/json',
+            ...corsHeaders 
+          },
+        }
+      );
     }
-
-    // Initialize OpenAI
-    const openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-    });
 
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini", // More cost-effective for this use case
@@ -74,7 +117,16 @@ export default async function handler(req, res) {
 
     const content = completion.choices[0]?.message?.content;
     if (!content) {
-      throw new Error('No response content from OpenAI');
+      return new Response(
+        JSON.stringify({ error: 'No response content from OpenAI' }),
+        {
+          status: 500,
+          headers: { 
+            'Content-Type': 'application/json',
+            ...corsHeaders 
+          },
+        }
+      );
     }
 
     try {
@@ -82,10 +134,26 @@ export default async function handler(req, res) {
       if (!result.acronyms || !Array.isArray(result.acronyms) || result.acronyms.length === 0) {
         throw new Error('Invalid response format: missing or empty acronyms array');
       }
-      res.json(result);
+      
+      return new Response(JSON.stringify(result), {
+        status: 200,
+        headers: { 
+          'Content-Type': 'application/json',
+          ...corsHeaders 
+        },
+      });
     } catch (parseError) {
       console.error('Error parsing JSON response:', parseError);
-      res.status(500).json({ error: 'Invalid response from AI service' });
+      return new Response(
+        JSON.stringify({ error: 'Invalid response from AI service' }),
+        {
+          status: 500,
+          headers: { 
+            'Content-Type': 'application/json',
+            ...corsHeaders 
+          },
+        }
+      );
     }
 
   } catch (error) {
@@ -93,15 +161,37 @@ export default async function handler(req, res) {
     
     if (error.response) {
       // OpenAI API error
-      res.status(error.response.status).json({
-        error: 'AI service error',
-        message: error.response.data?.error?.message || 'Error communicating with AI service'
-      });
+      return new Response(
+        JSON.stringify({
+          error: 'AI service error',
+          message: error.response.data?.error?.message || 'Error communicating with AI service'
+        }),
+        {
+          status: error.response.status,
+          headers: { 
+            'Content-Type': 'application/json',
+            ...corsHeaders 
+          },
+        }
+      );
     } else {
-      res.status(500).json({
-        error: 'Internal Server Error',
-        message: process.env.NODE_ENV === 'development' ? error.message : 'Something went wrong'
-      });
+      return new Response(
+        JSON.stringify({
+          error: 'Internal Server Error',
+          message: process.env.NODE_ENV === 'development' ? error.message : 'Something went wrong'
+        }),
+        {
+          status: 500,
+          headers: { 
+            'Content-Type': 'application/json',
+            ...corsHeaders 
+          },
+        }
+      );
     }
   }
-} 
+}
+
+export const config = {
+  runtime: "edge",
+}; 

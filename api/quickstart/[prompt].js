@@ -1,44 +1,73 @@
 import OpenAI from "openai";
 
-export default async function handler(req, res) {
-  // Set CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+// Initialize OpenAI client outside handler for reuse
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
-  // Handle OPTIONS request for CORS
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
+export default async function handler(request) {
+  const corsHeaders = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept',
+  };
+
+  // Handle preflight OPTIONS request
+  if (request.method === 'OPTIONS') {
+    return new Response(null, {
+      status: 200,
+      headers: corsHeaders,
+    });
   }
 
   // Only allow GET requests
-  if (req.method !== 'GET') {
-    res.status(405).json({ error: 'Method not allowed' });
-    return;
+  if (request.method !== 'GET') {
+    return new Response(
+      JSON.stringify({ error: 'Method not allowed' }),
+      {
+        status: 405,
+        headers: { 
+          'Content-Type': 'application/json',
+          ...corsHeaders 
+        },
+      }
+    );
   }
 
   try {
     // Validate OpenAI API key
     if (!process.env.OPENAI_API_KEY) {
       console.error('OPENAI_API_KEY is not set in environment variables');
-      res.status(500).json({ error: 'Server configuration error' });
-      return;
+      return new Response(
+        JSON.stringify({ error: 'Server configuration error' }),
+        {
+          status: 500,
+          headers: { 
+            'Content-Type': 'application/json',
+            ...corsHeaders 
+          },
+        }
+      );
     }
 
-    const { prompt } = req.query;
+    const url = new URL(request.url);
+    const pathSegments = url.pathname.split('/').filter(Boolean);
+    const prompt = pathSegments[pathSegments.length - 1]; // Get the last segment as the prompt
     
     if (!prompt) {
-      res.status(400).json({ error: 'Prompt parameter is required' });
-      return;
+      return new Response(
+        JSON.stringify({ error: 'Prompt parameter is required' }),
+        {
+          status: 400,
+          headers: { 
+            'Content-Type': 'application/json',
+            ...corsHeaders 
+          },
+        }
+      );
     }
 
     const decodedPrompt = decodeURIComponent(prompt);
-
-    // Initialize OpenAI
-    const openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-    });
 
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini", // Cost-effective for simple HTML generation
@@ -58,25 +87,62 @@ export default async function handler(req, res) {
 
     const content = completion.choices[0]?.message?.content;
     if (!content) {
-      throw new Error('No response content from OpenAI');
+      return new Response(
+        JSON.stringify({ error: 'No response content from OpenAI' }),
+        {
+          status: 500,
+          headers: { 
+            'Content-Type': 'application/json',
+            ...corsHeaders 
+          },
+        }
+      );
     }
 
-    res.json({ content });
+    return new Response(JSON.stringify({ content }), {
+      status: 200,
+      headers: { 
+        'Content-Type': 'application/json',
+        ...corsHeaders 
+      },
+    });
 
   } catch (error) {
     console.error('Error in quickstart API:', error);
     
     if (error.response) {
       // OpenAI API error
-      res.status(error.response.status).json({
-        error: 'AI service error',
-        message: error.response.data?.error?.message || 'Error communicating with AI service'
-      });
+      return new Response(
+        JSON.stringify({
+          error: 'AI service error',
+          message: error.response.data?.error?.message || 'Error communicating with AI service'
+        }),
+        {
+          status: error.response.status,
+          headers: { 
+            'Content-Type': 'application/json',
+            ...corsHeaders 
+          },
+        }
+      );
     } else {
-      res.status(500).json({
-        error: 'Internal Server Error',
-        message: process.env.NODE_ENV === 'development' ? error.message : 'Something went wrong'
-      });
+      return new Response(
+        JSON.stringify({
+          error: 'Internal Server Error',
+          message: process.env.NODE_ENV === 'development' ? error.message : 'Something went wrong'
+        }),
+        {
+          status: 500,
+          headers: { 
+            'Content-Type': 'application/json',
+            ...corsHeaders 
+          },
+        }
+      );
     }
   }
-} 
+}
+
+export const config = {
+  runtime: "edge",
+}; 

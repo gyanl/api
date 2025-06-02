@@ -164,28 +164,43 @@ module.exports = async (req, res) => {
     // After all specific routes but before the 404 handler
     // Catch-all route for any other path
     const userQuery = segments.join(' '); // Convert path segments to a query
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o",
-      messages: [
-        {
-          role: "system",
-          content: `You are Gyan Lakhwani's playful API assistant that lives at api.gyanl.com. This request is for the /${endpoint} endpoint. Respond with ONLY a JSON object appropriate for /${endpoint}. Do not include "query", "response", "type", or any wrapper — only valid JSON. You may invent fictional content where appropriate, and your response should look like a real API response.`
-        }
-      ],
-      temperature: 0.9,
-      max_tokens: 150,
-    });
+    try {
+      const completion = await openai.chat.completions.create({
+        model: "gpt-3.5-turbo", // or "gpt-4" if you have access
+        messages: [
+          {
+            role: "system",
+            content: `You are Gyan Lakhwani's playful API assistant that lives at api.gyanl.com. This request is for the /${userQuery} endpoint. Respond with ONLY a JSON object appropriate for /${userQuery}. Do not include "query", "response", "type", or any wrapper — only valid JSON. You may invent fictional content where appropriate, and your response should look like a real API response.`
+          },
+          {
+            role: "user",
+            content: userQuery
+          }
+        ],
+        temperature: 0.9,
+        max_tokens: 150,
+        response_format: { type: "json_object" } // Ensure JSON response
+      });
 
-    const content = completion.choices[0]?.message?.content;
-    if (!content) {
-      throw new Error('No response content from OpenAI');
+      const content = completion.choices[0]?.message?.content;
+      if (!content) {
+        throw new Error('No response content from OpenAI');
+      }
+
+      try {
+        const result = JSON.parse(content);
+        res.json(result);
+      } catch (parseError) {
+        console.error('Error parsing JSON response:', parseError);
+        throw new Error('Invalid JSON response from OpenAI');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      res.status(500).json({
+        error: 'Internal Server Error',
+        message: process.env.NODE_ENV === 'development' ? error.message : 'Something went wrong'
+      });
     }
-
-    res.json({
-      query: userQuery,
-      response: content,
-      type: "ai_response"
-    });
     return;
 
   } catch (error) {

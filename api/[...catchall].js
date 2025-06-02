@@ -70,7 +70,7 @@ export default async function handler(request) {
     }
 
     // Build system prompt
-    let systemPrompt = `You are Gyan Lakhwani's playful API assistant that lives at api.gyanl.com. This request is for the api.gyanl.com/${userQuery} endpoint.`;
+    let systemPrompt = `You are Gyan Lakhwani's helpful and playful API assistant that lives at api.gyanl.com and generates JSON responses for any endpoint requested by the user. This request is for the api.gyanl.com/${userQuery} endpoint.`;
 
     // Add field-specific instructions
     if (fields) {
@@ -78,7 +78,7 @@ export default async function handler(request) {
       systemPrompt += ` The response must include these specific fields: ${fieldList.join(', ')}.`;
     }
 
-    systemPrompt += ` You must respond with ONLY valid JSON - no extra text, no markdown formatting, no explanations. Ensure all JSON strings are properly escaped.`;
+    systemPrompt += ` You must respond with ONLY valid JSON - no extra text, no markdown formatting, no explanations. Ensure all JSON strings are properly escaped. The JSON must be complete and parseable. Always return at least one key-value pair. Never return empty objects or arrays unless specifically requested.`;
 
     // Build user prompt
     let userPrompt = `Create a JSON response for the endpoint: ${userQuery}`;
@@ -87,26 +87,106 @@ export default async function handler(request) {
       userPrompt += ` with the following fields: ${fields}`;
     }
 
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini", // Cost-effective for creative responses
-      messages: [
+    userPrompt += `. Ensure the response is valid, complete JSON with meaningful content.`;
+
+    let completion;
+    let retryCount = 0;
+    const maxRetries = 2;
+    
+    while (retryCount <= maxRetries) {
+      try {
+        completion = await openai.chat.completions.create({
+          model: "gpt-4.1-mini", // Cost-effective for creative responses
+          messages: [
+            {
+              role: "system",
+              content: systemPrompt,
+            },
+            {
+              role: "user",
+              content: userPrompt,
+            },
+          ],
+          temperature: 0.8,
+          max_tokens: 400,
+          response_format: { type: "json_object" },
+        });
+        break; // Success, exit retry loop
+      } catch (openaiError) {
+        console.error(`OpenAI API call failed (attempt ${retryCount + 1}):`, openaiError);
+        
+        // Handle specific OpenAI errors that shouldn't be retried
+        if (openaiError.status === 429) {
+          return new Response(
+            JSON.stringify({
+              error: "RATE_LIMITED",
+              message: "API rate limit exceeded. Please try again later.",
+              endpoint: userQuery
+            }),
+            {
+              status: 429,
+              headers: { 
+                'Content-Type': 'application/json',
+                ...corsHeaders 
+              },
+            }
+          );
+        }
+        
+        if (openaiError.status === 401) {
+          return new Response(
+            JSON.stringify({
+              error: "UNAUTHORIZED",
+              message: "API authentication failed.",
+              endpoint: userQuery
+            }),
+            {
+              status: 500, // Don't expose auth issues to client
+              headers: { 
+                'Content-Type': 'application/json',
+                ...corsHeaders 
+              },
+            }
+          );
+        }
+        
+        // For other errors, retry if we haven't reached max retries
+        retryCount++;
+        if (retryCount > maxRetries) {
+          // Re-throw to be caught by outer try-catch
+          throw openaiError;
+        }
+        
+        // Wait briefly before retrying (exponential backoff)
+        await new Promise(resolve => setTimeout(resolve, Math.pow(2, retryCount) * 100));
+      }
+    }
+
+    if (!completion || !completion.choices || completion.choices.length === 0) {
+      console.error('OpenAI returned invalid completion structure:', completion);
+      return new Response(
+        JSON.stringify({
+          error: "AI_INVALID_RESPONSE",
+          message: "AI service returned an invalid response structure.",
+          endpoint: userQuery
+        }),
         {
-          role: "system",
-          content: systemPrompt,
-        },
-        {
-          role: "user",
-          content: userPrompt,
-        },
-      ],
-      temperature: 0.8,
-      max_tokens: 250,
-      response_format: { type: "json_object" },
-    });
+          status: 500,
+          headers: { 
+            'Content-Type': 'application/json',
+            ...corsHeaders 
+          },
+        }
+      );
+    }
 
     const aiResponseString = completion.choices[0]?.message?.content;
 
-    if (!aiResponseString) {
+    console.log('OpenAI raw response:', aiResponseString);
+    console.log('OpenAI response type:', typeof aiResponseString);
+    console.log('OpenAI response length:', aiResponseString?.length || 0);
+
+    if (!aiResponseString || aiResponseString.trim() === '') {
       console.error('OpenAI response content is empty or malformed:', completion);
       return new Response(
         JSON.stringify({
@@ -124,15 +204,26 @@ export default async function handler(request) {
       );
     }
 
-    console.log('OpenAI raw response:', aiResponseString);
-
     // Parse and validate the JSON response from OpenAI
+    let jsonOutput;
     try {
-      const jsonOutput = JSON.parse(aiResponseString);
+      const trimmedResponse = aiResponseString.trim();
+      
+      // Additional check for empty or whitespace-only responses
+      if (!trimmedResponse) {
+        throw new Error('Response is empty after trimming');
+      }
+      
+      jsonOutput = JSON.parse(trimmedResponse);
       
       // Ensure we have a valid object
       if (typeof jsonOutput !== 'object' || jsonOutput === null) {
         throw new Error('Response is not a valid JSON object');
+      }
+
+      // Validate that it's not an empty object if fields are requested
+      if (fields && Object.keys(jsonOutput).length === 0) {
+        throw new Error('Response is an empty object when fields were requested');
       }
 
       return new Response(JSON.stringify(jsonOutput), {
@@ -144,7 +235,8 @@ export default async function handler(request) {
       });
     } catch (parseError) {
       console.error('Failed to parse JSON from AI:', parseError);
-      console.error('AI response string was:', aiResponseString);
+      console.error('AI response string was:', JSON.stringify(aiResponseString));
+      console.error('Parse error details:', parseError.message);
       
       // Fallback response when JSON parsing fails
       const fallbackResponse = {
@@ -152,7 +244,11 @@ export default async function handler(request) {
         status: "playful_response",
         note: "This endpoint is powered by AI creativity",
         endpoint: userQuery,
-        fallback_reason: "AI returned invalid JSON"
+        fallback_reason: "AI returned invalid JSON",
+        debug_info: process.env.NODE_ENV === 'development' ? {
+          ai_response: aiResponseString,
+          parse_error: parseError.message
+        } : undefined
       };
 
       // Apply field filtering to fallback if specified

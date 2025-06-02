@@ -1,150 +1,393 @@
 <!DOCTYPE html>
-<html>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
+<html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <title>Gyan's API Documentation</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gyan's Anything API</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
-            color: #333;
         }
-        h1 {
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 30px;
+        }
+
+        .main-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .api-builder {
+            margin-bottom: 30px;
+        }
+
+        .api-builder h2 {
             color: #2c3e50;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
         }
-        h2 {
-            color: #34495e;
+
+        .url-builder {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 10px;
+            border: 2px solid #e9ecef;
+            transition: border-color 0.3s ease;
+        }
+
+        .url-builder:focus-within {
+            border-color: #667eea;
+        }
+
+        .url-prefix {
+            color: #666;
+            font-weight: 500;
+            white-space: nowrap;
+            margin-right: 5px;
+        }
+
+        .endpoint-input {
+            border: none;
+            background: transparent;
+            font-size: 16px;
+            padding: 5px;
+            outline: none;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .endpoint-input::placeholder {
+            color: #999;
+        }
+
+        .fields-section {
+            margin-bottom: 20px;
+        }
+
+        .fields-section label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .fields-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .fields-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .generated-url {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 14px;
+            word-break: break-all;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .copy-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .copy-btn:hover {
+            background: #5a6fd8;
+        }
+
+        .copy-btn:active {
+            transform: translateY(1px);
+        }
+
+        .try-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+            margin-left: 10px;
+        }
+
+        .try-btn:hover {
+            background: #218838;
+        }
+
+        .examples {
             margin-top: 30px;
         }
-        code {
+
+        .examples h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .example-item {
             background: #f8f9fa;
-            padding: 2px 6px;
-            border-radius: 4px;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .example-endpoint {
             font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            color: #667eea;
+            font-weight: 500;
+            margin-bottom: 5px;
         }
-        pre {
+
+        .example-description {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .response-preview {
             background: #f8f9fa;
-            padding: 15px;
             border-radius: 8px;
-            overflow-x: auto;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
         }
-        .endpoint {
-            background: #f1f8ff;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 10px 0;
+
+        .response-preview h4 {
+            margin-bottom: 10px;
+            color: #2c3e50;
         }
-        .note {
-            background: #fff3cd;
+
+        .response-content {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
             padding: 15px;
-            border-radius: 8px;
-            margin: 10px 0;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .loading {
+            color: #666;
+            font-style: italic;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .main-card {
+                padding: 20px;
+            }
+            
+            .url-builder {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .url-prefix {
+                margin-bottom: 5px;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Gyan's API Documentation</h1>
-    
-    <p>Base URL: <code>https://api.gyanl.com</code></p>
+    <div class="container">
+        <header class="header">
+            <h1>🚀 Gyan's Anything API</h1>
+            <p>Turn any idea into an API endpoint with AI-powered creative responses</p>
+        </header>
 
-    <h2>Endpoints</h2>
+        <div class="main-card">
+            <div class="api-builder">
+                <h2>✨ Build Your API Endpoint</h2>
+                
+                <div class="url-builder">
+                    <span class="url-prefix">api.gyanl.com/</span>
+                    <input 
+                        type="text" 
+                        class="endpoint-input" 
+                        id="endpointInput"
+                        placeholder="weather/today" 
+                        value="weather/today"
+                    >
+                </div>
 
-    <div class="endpoint">
-        <h3>Get Random Fact</h3>
-        <p>Returns a random fact about Gyan.</p>
+                <div class="fields-section">
+                    <label for="fieldsInput">Response Fields (optional):</label>
+                    <input 
+                        type="text" 
+                        class="fields-input" 
+                        id="fieldsInput"
+                        placeholder="temp,condition,forecast (comma-separated)"
+                    >
+                </div>
 
-        <p><strong>Endpoint:</strong> <code>GET /fact</code></p>
+                <div class="generated-url" id="generatedUrl">
+                    https://api.gyanl.com/weather/today
+                </div>
 
-        <h4>Response:</h4>
-        <ul>
-            <li>Returns a JSON object containing a random fact and the total number of available facts</li>
-        </ul>
+                <button class="copy-btn" id="copyBtn">📋 Copy URL</button>
+                <button class="try-btn" id="tryBtn">🔥 Try It Live</button>
 
-        <h4>Example Request:</h4>
-        <pre><code>curl https://api.gyanl.com/fact</code></pre>
+                <div class="response-preview" id="responsePreview">
+                    <h4>API Response:</h4>
+                    <div class="response-content" id="responseContent"></div>
+                </div>
+            </div>
 
-        <h4>Example Response:</h4>
-        <pre><code>{
-  "fact": "Gyan is a software engineer who loves building things",
-  "total_facts": 5
-}</code></pre>
+            <div class="examples">
+                <h3>💡 Example Endpoints</h3>
+                
+                <div class="example-item" onclick="fillExample('pokemon/pikachu', 'name,type,power')">
+                    <div class="example-endpoint">api.gyanl.com/pokemon/pikachu?fields=name,type,power</div>
+                    <div class="example-description">Get Pokémon data with specific fields</div>
+                </div>
 
-        <h4>Error Response:</h4>
-        <pre><code>{
-  "error": "Internal Server Error",
-  "message": "Something went wrong"
-}</code></pre>
+                <div class="example-item" onclick="fillExample('recipe/pizza', 'ingredients,time,difficulty')">
+                    <div class="example-endpoint">api.gyanl.com/recipe/pizza?fields=ingredients,time,difficulty</div>
+                    <div class="example-description">Pizza recipe with cooking details</div>
+                </div>
+
+                <div class="example-item" onclick="fillExample('motivational/quote', '')">
+                    <div class="example-endpoint">api.gyanl.com/motivational/quote</div>
+                    <div class="example-description">Get an inspiring quote</div>
+                </div>
+
+                <div class="example-item" onclick="fillExample('color/palette', 'hex,name,mood')">
+                    <div class="example-endpoint">api.gyanl.com/color/palette?fields=hex,name,mood</div>
+                    <div class="example-description">Generate a color palette</div>
+                </div>
+
+                <div class="example-item" onclick="fillExample('startup/idea', 'name,description,market')">
+                    <div class="example-endpoint">api.gyanl.com/startup/idea?fields=name,description,market</div>
+                    <div class="example-description">Get a creative startup idea</div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="endpoint">
-        <h3>Generate Acronym Expansions</h3>
-        <p>Generates creative acronym expansions for a given prompt.</p>
+    <script>
+        const endpointInput = document.getElementById('endpointInput');
+        const fieldsInput = document.getElementById('fieldsInput');
+        const generatedUrl = document.getElementById('generatedUrl');
+        const copyBtn = document.getElementById('copyBtn');
+        const tryBtn = document.getElementById('tryBtn');
+        const responsePreview = document.getElementById('responsePreview');
+        const responseContent = document.getElementById('responseContent');
 
-        <p><strong>Endpoint:</strong> <code>GET /acronyms/:prompt</code></p>
+        function updateUrl() {
+            const endpoint = endpointInput.value.trim() || 'default';
+            const fields = fieldsInput.value.trim();
+            
+            let url = `https://api.gyanl.com/${endpoint}`;
+            if (fields) {
+                url += `?fields=${encodeURIComponent(fields)}`;
+            }
+            
+            generatedUrl.textContent = url;
+        }
 
-        <h4>Parameters:</h4>
-        <ul>
-            <li><code>prompt</code> (path parameter): The acronym to generate expansions for</li>
-        </ul>
+        function fillExample(endpoint, fields) {
+            endpointInput.value = endpoint;
+            fieldsInput.value = fields;
+            updateUrl();
+        }
 
-        <h4>Response:</h4>
-        <ul>
-            <li>Returns a JSON array of strings, where each string is an HTML-formatted expansion</li>
-            <li>Each expansion is a complete sentence starting with a letter from the acronym</li>
-        </ul>
+        function copyToClipboard() {
+            navigator.clipboard.writeText(generatedUrl.textContent).then(() => {
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = '✅ Copied!';
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                }, 2000);
+            });
+        }
 
-        <h4>Example Request:</h4>
-        <pre><code>curl https://api.gyanl.com/acronyms/API</code></pre>
+        async function tryAPI() {
+            const url = generatedUrl.textContent;
+            responsePreview.style.display = 'block';
+            responseContent.textContent = 'Loading...';
+            responseContent.className = 'response-content loading';
 
-        <h4>Example Response:</h4>
-        <pre><code>[
-  "Amazing Programming Interface",
-  "Always Providing Innovation",
-  "Advanced Problem Integration",
-  "Automated Process Intelligence",
-  "Agile Project Implementation"
-]</code></pre>
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                responseContent.textContent = JSON.stringify(data, null, 2);
+                responseContent.className = 'response-content';
+            } catch (error) {
+                responseContent.textContent = `Error: ${error.message}`;
+                responseContent.className = 'response-content';
+            }
+        }
 
-        <h4>Error Response:</h4>
-        <pre><code>{
-  "error": "An error occurred while processing your request",
-  "details": "Error message details"
-}</code></pre>
-    </div>
+        endpointInput.addEventListener('input', updateUrl);
+        fieldsInput.addEventListener('input', updateUrl);
+        copyBtn.addEventListener('click', copyToClipboard);
+        tryBtn.addEventListener('click', tryAPI);
 
-    <h2>Rate Limits</h2>
-    <ul>
-        <li>Standard rate limits apply</li>
-        <li>Please be mindful of API usage</li>
-    </ul>
-
-    <h2>Authentication</h2>
-    <ul>
-        <li>No authentication required</li>
-        <li>Public API endpoint</li>
-    </ul>
-
-    <h2>CORS</h2>
-    <ul>
-        <li>CORS is enabled</li>
-        <li>All origins are allowed (<code>Access-Control-Allow-Origin: *</code>)</li>
-    </ul>
-
-    <div class="note">
-        <h2>Notes</h2>
-        <ul>
-            <li>The API uses OpenAI's GPT-3.5 Turbo Instruct model</li>
-            <li>Each request generates 10 different creative expansions</li>
-            <li>Responses are formatted in HTML for easy integration</li>
-        </ul>
-    </div>
+        // Initialize
+        updateUrl();
+    </script>
 </body>
 </html>
 

@@ -161,8 +161,36 @@ module.exports = async (req, res) => {
       return;
     }
 
-    // Handle 404
-    res.status(404).json({ error: 'Not Found' });
+    // After all specific routes but before the 404 handler
+    // Catch-all route for any other path
+    const userQuery = segments.join(' '); // Convert path segments to a query
+    const completion = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: [
+        {
+          role: "system",
+          content: "You are Gyan Lakhwani (also known as @gyanl)'s playful API assistant that lives at api.gyanl.com. You receive requests at different endpoints (e.g. /work, /number, /query, /fact, /project). Respond to each request as a JSON object with a structure that matches the endpoint’s intent. You can invent fictional data where appropriate (e.g. fictional works, funny facts, random numbers). The response should always be valid JSON with clear key names. Do not return any extra explanation or commentary — just the JSON."
+        },
+        {
+          role: "user",
+          content: userQuery
+        }
+      ],
+      temperature: 0.9,
+      max_tokens: 150,
+    });
+
+    const content = completion.choices[0]?.message?.content;
+    if (!content) {
+      throw new Error('No response content from OpenAI');
+    }
+
+    res.json({
+      query: userQuery,
+      response: content,
+      type: "ai_response"
+    });
+    return;
 
   } catch (error) {
     console.error('Error:', error);

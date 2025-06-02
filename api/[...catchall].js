@@ -47,15 +47,15 @@ export default async function handler(req, res) {
       messages: [
         {
           role: "system",
-          content: `You are Gyan Lakhwani's playful API assistant that lives at api.gyanl.com. This request is for the api.gyanl.com/${userQuery} endpoint. Respond with ONLY a JSON object appropriate for /${userQuery}. Do not include "query", "response", "type", or any wrapper — only valid JSON. You may invent funny fictional content where appropriate, and your response should look like a real API response.`
+          content: `You are Gyan Lakhwani's playful API assistant that lives at api.gyanl.com. This request is for the api.gyanl.com/${userQuery} endpoint. You must respond with ONLY valid JSON - no extra text, no markdown formatting, no explanations. Create a creative JSON response that fits the endpoint theme. Keep the response simple and ensure all JSON strings are properly escaped. Example format: {"message": "Hello world", "status": "success"}`
         },
         {
           role: "user",
-          content: userQuery
+          content: `Create a JSON response for the endpoint: ${userQuery}`
         }
       ],
-      temperature: 0.9,
-      max_tokens: 150,
+      temperature: 0.7, // Reduced temperature for more consistent JSON output
+      max_tokens: 120, // Reduced to avoid truncation issues
       response_format: { type: "json_object" }
     });
 
@@ -64,12 +64,31 @@ export default async function handler(req, res) {
       throw new Error('No response content from OpenAI');
     }
 
+    // More robust JSON parsing with detailed error handling
     try {
-      const result = JSON.parse(content);
+      // Clean the content first - remove any potential markdown formatting
+      const cleanContent = content.trim().replace(/^```json\s*/, '').replace(/\s*```$/, '');
+      const result = JSON.parse(cleanContent);
+      
+      // Ensure we have a valid object
+      if (typeof result !== 'object' || result === null) {
+        throw new Error('Response is not a valid JSON object');
+      }
+      
       res.json(result);
     } catch (parseError) {
-      console.error('Error parsing JSON response:', parseError);
-      res.status(500).json({ error: 'Invalid response from AI service' });
+      console.error('JSON parsing error:', parseError);
+      console.error('Raw content:', content);
+      
+      // Fallback response when JSON parsing fails
+      const fallbackResponse = {
+        message: `Welcome to the ${userQuery} endpoint!`,
+        status: "playful_response",
+        note: "This endpoint is powered by AI creativity",
+        endpoint: userQuery
+      };
+      
+      res.json(fallbackResponse);
     }
 
   } catch (error) {
@@ -77,7 +96,7 @@ export default async function handler(req, res) {
     
     if (error.response) {
       // OpenAI API error
-      res.status(error.response.status).json({
+      res.status(error.response.status || 500).json({
         error: 'AI service error',
         message: error.response.data?.error?.message || 'Error communicating with AI service'
       });

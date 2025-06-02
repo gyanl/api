@@ -19,66 +19,34 @@ const validateAcronymInput = (nameToExpand) => {
   return null;
 };
 
-export default async function handler(request) {
-  const corsHeaders = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, OPTIONS',
-    'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept',
-  };
+export default async function handler(req, res) {
+  // Handle CORS for all requests
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
 
   // Handle preflight OPTIONS request
-  if (request.method === 'OPTIONS') {
-    return new Response(null, {
-      status: 200,
-      headers: corsHeaders,
-    });
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
   }
 
   // Only allow GET requests
-  if (request.method !== 'GET') {
-    return new Response(
-      JSON.stringify({ error: 'Method not allowed' }),
-      {
-        status: 405,
-        headers: { 
-          'Content-Type': 'application/json',
-          ...corsHeaders 
-        },
-      }
-    );
+  if (req.method !== 'GET') {
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
     // Validate OpenAI API key
     if (!process.env.OPENAI_API_KEY) {
       console.error('OPENAI_API_KEY is not set in environment variables');
-      return new Response(
-        JSON.stringify({ error: 'Server configuration error' }),
-        {
-          status: 500,
-          headers: { 
-            'Content-Type': 'application/json',
-            ...corsHeaders 
-          },
-        }
-      );
+      return res.status(500).json({ error: 'Server configuration error' });
     }
 
-    const url = new URL(request.url);
-    const pathSegments = url.pathname.split('/').filter(Boolean);
-    const name = pathSegments[pathSegments.length - 1]; // Get the last segment as the name
+    // Get name from query parameters or dynamic route
+    const name = req.query.name || req.query.slug || '';
 
     if (!name) {
-      return new Response(
-        JSON.stringify({ error: 'Name parameter is required' }),
-        {
-          status: 400,
-          headers: { 
-            'Content-Type': 'application/json',
-            ...corsHeaders 
-          },
-        }
-      );
+      return res.status(400).json({ error: 'Name parameter is required' });
     }
 
     const nameToExpand = decodeURIComponent(name);
@@ -86,20 +54,11 @@ export default async function handler(request) {
     // Validate input
     const validationError = validateAcronymInput(nameToExpand);
     if (validationError) {
-      return new Response(
-        JSON.stringify(validationError),
-        {
-          status: 400,
-          headers: { 
-            'Content-Type': 'application/json',
-            ...corsHeaders 
-          },
-        }
-      );
+      return res.status(400).json(validationError);
     }
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini", // More cost-effective for this use case
+      model: "gpt-4.1-mini", // More cost-effective for this use case
       messages: [
         {
           role: "system",
@@ -117,16 +76,7 @@ export default async function handler(request) {
 
     const content = completion.choices[0]?.message?.content;
     if (!content) {
-      return new Response(
-        JSON.stringify({ error: 'No response content from OpenAI' }),
-        {
-          status: 500,
-          headers: { 
-            'Content-Type': 'application/json',
-            ...corsHeaders 
-          },
-        }
-      );
+      return res.status(500).json({ error: 'No response content from OpenAI' });
     }
 
     try {
@@ -135,25 +85,11 @@ export default async function handler(request) {
         throw new Error('Invalid response format: missing or empty acronyms array');
       }
       
-      return new Response(JSON.stringify(result), {
-        status: 200,
-        headers: { 
-          'Content-Type': 'application/json',
-          ...corsHeaders 
-        },
-      });
+      res.setHeader('Content-Type', 'application/json');
+      return res.send(content);
     } catch (parseError) {
       console.error('Error parsing JSON response:', parseError);
-      return new Response(
-        JSON.stringify({ error: 'Invalid response from AI service' }),
-        {
-          status: 500,
-          headers: { 
-            'Content-Type': 'application/json',
-            ...corsHeaders 
-          },
-        }
-      );
+      return res.status(500).json({ error: 'Invalid response from AI service' });
     }
 
   } catch (error) {
@@ -161,37 +97,21 @@ export default async function handler(request) {
     
     if (error.response) {
       // OpenAI API error
-      return new Response(
-        JSON.stringify({
-          error: 'AI service error',
-          message: error.response.data?.error?.message || 'Error communicating with AI service'
-        }),
-        {
-          status: error.response.status,
-          headers: { 
-            'Content-Type': 'application/json',
-            ...corsHeaders 
-          },
-        }
-      );
+      return res.status(error.response.status || 500).json({
+        error: 'AI service error',
+        message: error.response.data?.error?.message || 'Error communicating with AI service'
+      });
     } else {
-      return new Response(
-        JSON.stringify({
-          error: 'Internal Server Error',
-          message: process.env.NODE_ENV === 'development' ? error.message : 'Something went wrong'
-        }),
-        {
-          status: 500,
-          headers: { 
-            'Content-Type': 'application/json',
-            ...corsHeaders 
-          },
-        }
-      );
+      return res.status(500).json({
+        error: 'Internal Server Error',
+        message: process.env.NODE_ENV === 'development' ? error.message : 'Something went wrong'
+      });
     }
   }
 }
 
 export const config = {
-  runtime: "edge",
+  runtime: 'nodejs18.x',
+  memory: 1024, // 1GB of memory
+  maxDuration: 10 // Maximum execution time in seconds
 }; 

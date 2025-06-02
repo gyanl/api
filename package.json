@@ -3,11 +3,10 @@
   "version": "1.0.0",
   "type": "module",
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=22.0.0"
   },
   "scripts": {
     "dev": "vercel dev",
-    "build": "vercel build",
     "deploy": "vercel --prod"
   },
   "keywords": ["api", "openai", "acronyms", "serverless"],

@@ -82,7 +82,7 @@ module.exports = async (req, res) => {
     // Route handling
     if (segments[0] === 'acronyms' && segments[1]) {
       const nameToExpand = segments[1];
-      
+
       // Validate input
       const validationError = validateAcronymInput(nameToExpand);
       if (validationError) {
@@ -165,15 +165,11 @@ module.exports = async (req, res) => {
     // Catch-all route for any other path
     const userQuery = segments.join(' '); // Convert path segments to a query
     const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
+      model: "gpt-4o",
       messages: [
         {
           role: "system",
-          content: "You are Gyan Lakhwani (also known as @gyanl)'s playful API assistant that lives at api.gyanl.com. You receive requests at different endpoints (e.g. /work, /number, /query, /fact, /project). Respond to each request as a JSON object with a structure that matches the endpoint’s intent. You can invent fictional data where appropriate (e.g. fictional works, funny facts, random numbers). The response should always be valid JSON with clear key names. Do not return any extra explanation or commentary — just the JSON. Do not specify that this is an AI response, the response should be exactly like a real API endpoint."
-        },
-        {
-          role: "user",
-          content: userQuery
+          content: `You are Gyan Lakhwani's playful API assistant that lives at api.gyanl.com. This request is for the /${endpoint} endpoint. Respond with ONLY a JSON object appropriate for /${endpoint}. Do not include "query", "response", "type", or any wrapper — only valid JSON. You may invent fictional content where appropriate, and your response should look like a real API response.`
         }
       ],
       temperature: 0.9,

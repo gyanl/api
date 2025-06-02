@@ -29,13 +29,34 @@ export default async function handler(req, res) {
     // Get the path segments from the catchall parameter
     const { catchall } = req.query;
     
-    if (!catchall || catchall.length === 0) {
+    // Debug logging
+    console.log('Catchall parameter:', catchall);
+    console.log('Type of catchall:', typeof catchall);
+    console.log('Is array:', Array.isArray(catchall));
+    
+    if (!catchall) {
       res.status(404).json({ error: 'Endpoint not found' });
       return;
     }
 
-    // Convert path segments to a query
-    const userQuery = Array.isArray(catchall) ? catchall.join(' ') : catchall;
+    // More robust handling of catchall parameter
+    let userQuery;
+    let pathSegments;
+    
+    if (Array.isArray(catchall)) {
+      pathSegments = catchall;
+      userQuery = catchall.join('/'); // Use / instead of space for paths
+    } else if (typeof catchall === 'string') {
+      pathSegments = [catchall];
+      userQuery = catchall;
+    } else {
+      console.error('Unexpected catchall type:', typeof catchall, catchall);
+      res.status(400).json({ error: 'Invalid path format' });
+      return;
+    }
+
+    console.log('Path segments:', pathSegments);
+    console.log('User query:', userQuery);
 
     // Initialize OpenAI
     const openai = new OpenAI({
@@ -64,10 +85,14 @@ export default async function handler(req, res) {
       throw new Error('No response content from OpenAI');
     }
 
+    console.log('OpenAI raw response:', content);
+
     // More robust JSON parsing with detailed error handling
     try {
       // Clean the content first - remove any potential markdown formatting
       const cleanContent = content.trim().replace(/^```json\s*/, '').replace(/\s*```$/, '');
+      console.log('Cleaned content:', cleanContent);
+      
       const result = JSON.parse(cleanContent);
       
       // Ensure we have a valid object
@@ -85,7 +110,8 @@ export default async function handler(req, res) {
         message: `Welcome to the ${userQuery} endpoint!`,
         status: "playful_response",
         note: "This endpoint is powered by AI creativity",
-        endpoint: userQuery
+        endpoint: userQuery,
+        path_segments: pathSegments
       };
       
       res.json(fallbackResponse);
@@ -93,6 +119,11 @@ export default async function handler(req, res) {
 
   } catch (error) {
     console.error('Error in catchall API:', error);
+    console.error('Full error details:', {
+      message: error.message,
+      stack: error.stack,
+      response: error.response?.data
+    });
     
     if (error.response) {
       // OpenAI API error
@@ -103,7 +134,11 @@ export default async function handler(req, res) {
     } else {
       res.status(500).json({
         error: 'Internal Server Error',
-        message: process.env.NODE_ENV === 'development' ? error.message : 'Something went wrong'
+        message: process.env.NODE_ENV === 'development' ? error.message : 'Something went wrong',
+        debug: process.env.NODE_ENV === 'development' ? {
+          stack: error.stack,
+          query: req.query
+        } : undefined
       });
     }
   }

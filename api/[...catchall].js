@@ -183,15 +183,49 @@ export default async function handler(request) {
     const aiResponseString = completion.choices[0]?.message?.content;
 
     console.log('OpenAI raw response:', aiResponseString);
-    console.log('OpenAI response type:', typeof aiResponseString);
-    console.log('OpenAI response length:', aiResponseString?.length || 0);
 
     if (!aiResponseString || aiResponseString.trim() === '') {
-      console.error('OpenAI response content is empty or malformed:', completion);
+      console.error('OpenAI response content is empty or whitespace. Full completion object:', completion);
       return new Response(
         JSON.stringify({
           error: "AI_RESPONSE_EMPTY",
-          message: "The AI assistant did not return any content.",
+          message: "The AI assistant returned empty or whitespace content.",
+          endpoint: userQuery
+        }),
+        { 
+          status: 500, 
+          headers: { 
+            'Content-Type': 'application/json',
+            ...corsHeaders 
+          } 
+        }
+      );
+    }
+
+    try {
+      // Validate that the response is actual JSON, as requested from OpenAI
+      JSON.parse(aiResponseString); 
+
+      // If JSON.parse is successful, it means aiResponseString is a valid JSON string.
+      // Return it directly as the body.
+      return new Response(aiResponseString, {
+        status: 200,
+        headers: { 
+          'Content-Type': 'application/json',
+          ...corsHeaders 
+        },
+      });
+    } catch (parseError) {
+      console.error('Failed to parse JSON from AI:', parseError.message);
+      console.error('AI response string that caused parse error was:', aiResponseString); // Log the raw string
+      return new Response(
+        JSON.stringify({
+          error: "AI_INVALID_JSON_RESPONSE",
+          message: "The AI assistant returned a response that was not valid JSON.",
+          details: parseError.message,
+          // Consider adding aiResponseString here for client-side debugging if appropriate
+          // and if it doesn't expose sensitive information or is too large.
+          // For now, it's logged server-side.
           endpoint: userQuery
         }),
         {
@@ -202,82 +236,6 @@ export default async function handler(request) {
           },
         }
       );
-    }
-
-    // Parse and validate the JSON response from OpenAI
-    let jsonOutput;
-    try {
-      const trimmedResponse = aiResponseString.trim();
-      
-      // Additional check for empty or whitespace-only responses
-      if (!trimmedResponse) {
-        throw new Error('Response is empty after trimming');
-      }
-      
-      jsonOutput = JSON.parse(trimmedResponse);
-      
-      // Ensure we have a valid object
-      if (typeof jsonOutput !== 'object' || jsonOutput === null) {
-        throw new Error('Response is not a valid JSON object');
-      }
-
-      // Validate that it's not an empty object if fields are requested
-      if (fields && Object.keys(jsonOutput).length === 0) {
-        throw new Error('Response is an empty object when fields were requested');
-      }
-
-      return new Response(JSON.stringify(jsonOutput), {
-        status: 200,
-        headers: { 
-          'Content-Type': 'application/json',
-          ...corsHeaders 
-        },
-      });
-    } catch (parseError) {
-      console.error('Failed to parse JSON from AI:', parseError);
-      console.error('AI response string was:', JSON.stringify(aiResponseString));
-      console.error('Parse error details:', parseError.message);
-      
-      // Fallback response when JSON parsing fails
-      const fallbackResponse = {
-        message: `Welcome to the ${userQuery} endpoint!`,
-        status: "playful_response",
-        note: "This endpoint is powered by AI creativity",
-        endpoint: userQuery,
-        fallback_reason: "AI returned invalid JSON",
-        debug_info: process.env.NODE_ENV === 'development' ? {
-          ai_response: aiResponseString,
-          parse_error: parseError.message
-        } : undefined
-      };
-
-      // Apply field filtering to fallback if specified
-      if (fields) {
-        const fieldList = fields.split(',').map(f => f.trim());
-        const filteredResponse = {};
-        fieldList.forEach(field => {
-          if (fallbackResponse[field] !== undefined) {
-            filteredResponse[field] = fallbackResponse[field];
-          } else {
-            filteredResponse[field] = `Generated value for ${field}`;
-          }
-        });
-        return new Response(JSON.stringify(filteredResponse), {
-          status: 200,
-          headers: { 
-            'Content-Type': 'application/json',
-            ...corsHeaders 
-          },
-        });
-      }
-
-      return new Response(JSON.stringify(fallbackResponse), {
-        status: 200, // Return 200 with fallback rather than error
-        headers: { 
-          'Content-Type': 'application/json',
-          ...corsHeaders 
-        },
-      });
     }
 
   } catch (error) {

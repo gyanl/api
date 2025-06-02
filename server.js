@@ -19,13 +19,13 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-// Add this near the top of the file, after the other requires
 const facts = [
-  "Gyan is a software engineer who loves building things",
-  "Gyan created the AI Acronym Generator",
-  "Gyan's favorite programming language is JavaScript",
-  "Gyan enjoys solving complex problems",
-  "Gyan is passionate about AI and machine learning",
+  "Gyan is a designer, creative coder, and co-founder of Public Knowledge Studio.",
+  "Gyan is a bit obsessed with markdown.",
+  "Gyan previously worked as a product designer at Microsoft for 4.5 years.",
+  "Gyan has a Master's in Interaction Design from IDC School of Design, IIT Bombay.",
+  "Gyan wants to make the web weird again.",
+  "Gyan is a bit of a nerd.",
   // Add more facts here
 ];
 

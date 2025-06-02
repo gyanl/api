@@ -3,9 +3,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <head>
-    <meta property="og:image" content="https://gyanl.com/aicronym/aicronym.png" />
     <meta charset="UTF-8" />
-    <title>AICronym API Documentation</title>
+    <title>Gyan's API Documentation</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
@@ -51,11 +50,38 @@
     </style>
 </head>
 <body>
-    <h1>AICronym API Documentation</h1>
+    <h1>Gyan's API Documentation</h1>
     
     <p>Base URL: <code>https://api.gyanl.com</code></p>
 
     <h2>Endpoints</h2>
+
+    <div class="endpoint">
+        <h3>Get Random Fact</h3>
+        <p>Returns a random fact about Gyan.</p>
+
+        <p><strong>Endpoint:</strong> <code>GET /fact</code></p>
+
+        <h4>Response:</h4>
+        <ul>
+            <li>Returns a JSON object containing a random fact and the total number of available facts</li>
+        </ul>
+
+        <h4>Example Request:</h4>
+        <pre><code>curl https://api.gyanl.com/fact</code></pre>
+
+        <h4>Example Response:</h4>
+        <pre><code>{
+  "fact": "Gyan is a software engineer who loves building things",
+  "total_facts": 5
+}</code></pre>
+
+        <h4>Error Response:</h4>
+        <pre><code>{
+  "error": "Internal Server Error",
+  "message": "Something went wrong"
+}</code></pre>
+    </div>
 
     <div class="endpoint">
         <h3>Generate Acronym Expansions</h3>

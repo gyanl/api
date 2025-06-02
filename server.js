@@ -19,6 +19,16 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+// Add this near the top of the file, after the other requires
+const facts = [
+  "Gyan is a software engineer who loves building things",
+  "Gyan created the AI Acronym Generator",
+  "Gyan's favorite programming language is JavaScript",
+  "Gyan enjoys solving complex problems",
+  "Gyan is passionate about AI and machine learning",
+  // Add more facts here
+];
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error('Error:', err);
@@ -142,25 +152,12 @@ module.exports = async (req, res) => {
       return;
     }
 
-    // Serve static files for root path
-    if (path === '/' || path === '') {
-      res.setHeader('Content-Type', 'text/html');
-      res.send(`
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Get Your Acronym Now</title>
-            <script>
-              window.location.href = 'https://gyanl.com/aicronym';
-            </script>
-          </head>
-          <body>
-            Redirecting to main site...
-          </body>
-        </html>
-      `);
+    if (segments[0] === 'fact') {
+      const randomFact = facts[Math.floor(Math.random() * facts.length)];
+      res.json({
+        fact: randomFact,
+        total_facts: facts.length
+      });
       return;
     }
 
